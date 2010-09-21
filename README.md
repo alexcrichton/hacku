@@ -31,14 +31,14 @@ Then we hit go. The function `move()` will be as follows:
   * `pos`: an array of 3 element arrays where `x_i` is the position of the `i`'th object in space
   * `veloc`: an array of 3 element arrays where `v_i` is the components of the velocity of the `i`'th element.
   * `relevance`: this is a hash which stores all the relevances between two objects. `relevance[i][j]` only works if `i < j` and will give you the relevance between `i` and `j`
-  
+
 * The location array is initialized randomly and the velocity array is initially all 0.
 
 * `move()` will be called every so often and it will represent a time lapse of some number of seconds.
 
   * Upon calling move, all of the object's locations will be updated according to the springs/repulsions.
   * The arrays `pos` and `veloc` must be updated
-  
+
 ## Web Server
 
 This does things, flesh this out more
@@ -47,3 +47,8 @@ This does things, flesh this out more
 
 We need a photo for each artist, this is a function which when given a list of yahoo IDs of artists, it will return a list of URLs to the photos of the artists in the same order as provided, JSON encoded.
 
+## Possible Extensions
+
+1. Get a list of artists from a service (uploaded, last.fm, pandora?) and show how they group together
+2. Get a list of artists for you and your friends, color code all the objects, then see where the equilibrium is to find your similar artist tastes.
+3. Given an artist, show similar artists about them.
