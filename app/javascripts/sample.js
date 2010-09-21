@@ -6,33 +6,34 @@ o3djs.require('o3djs.math');
 o3djs.require('o3djs.rendergraph');
 o3djs.require('o3djs.primitives');
 o3djs.require('o3djs.material');
+o3djs.require('o3djs.io');
 
-
-// Events
-// init() once the page has finished loading.
 window.onload = initClient;
 
 // global variables
-// we make these global so we can easily access them from the debugger.
 var g_o3dElement;
 var g_client;
 var g_o3d;
 var g_math;
 var g_pack;
 var g_viewInfo;
-var g_eyePosition = [3, 4, 14];
-
-var g_cube, g_sphere, gc_transform, gs_transform;
-var sloc = [1, 0, 0];
-var cloc = [0, -2, 0];
-var svel = [0, 0, 0];
-var cvel = [0, 0, 0];
-
+var g_eyePosition = [6, 8, 28];
+var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
+var samplers = [], transforms = [];
+var locs = [
+  [1, 1, 1],
+  [-1, -1, -1]
+];
+var vels = [
+  [0, 0, 0],
+  [0, 0, 0]
+];
 
 /**
  * Creates the client area.
  */
 function initClient() {
+  window.g_finished = false;  // for selenium testing.
   o3djs.webgl.makeClients(main);
 }
 
@@ -50,6 +51,7 @@ function main(clientElements) {
   // Add the shapes to the transform heirarchy.
   createShapes();
 
+  window.g_finished = true;  // for selenium testing.
   setInterval(move, 80);
 }
 
@@ -87,20 +89,8 @@ function initContext() {
   // primitives are located.
   g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
       g_eyePosition,   // eye
-      [0, 0, 0],       // target
-      [0, 1, 0]);      // up
-}
-
-/**
- * Creates a material based on the given single color.
- * @param {!o3djs.math.Vector4} baseColor A 4-component vector with
- *     the R,G,B, and A components of a color.
- * @return {!o3d.Material} A phong material whose overall pigment is
- *     baseColor.
- */
-function createMaterial(baseColor) {
-  // Create a new, empty Material object.
-  return o3djs.material.createBasicMaterial(g_pack, g_viewInfo, baseColor);
+      [0, 0, 0],    // target
+      [0, 1, 0]);  // up
 }
 
 /**
@@ -108,71 +98,112 @@ function createMaterial(baseColor) {
  * transform graph at the root node.
  */
 function createShapes() {
-  var cube = o3djs.primitives.createCube(
-      g_pack,
-      createMaterial([0,1,0,1]), // A green phong-shaded material.
-      Math.sqrt(2));                  // The length of each side of the cube.
+  var cubeEffect = g_pack.createObject('Effect');
+  var vertexShaderString = document.getElementById('vshader').value;
+  var pixelShaderString = document.getElementById('pshader').value;
+  cubeEffect.loadVertexShaderFromString(vertexShaderString);
+  cubeEffect.loadPixelShaderFromString(pixelShaderString);
 
-  var sphere = o3djs.primitives.createSphere(
-      g_pack,
-      createMaterial([1,0,0,1]),
-      1.0,   // Radius of the sphere.
-      30,    // Number of meridians.
-      20);   // Number of parallels.
-  g_sphere = sphere;
-  g_cube = cube;
-  // Add the shapes to the transforms.
-  var transformTable = [
-    {shape: cube, translation: cloc},
-    {shape: sphere, translation: sloc}
-  ];
+  for (var tt = 0; tt < 2; ++tt) {
+    var material      = g_pack.createObject('Material');
+    material.drawList = g_viewInfo.performanceDrawList;
+    material.effect   = cubeEffect;
 
-  for (var tt = 0; tt < transformTable.length; ++tt) {
+    cubeEffect.createUniformParameters(material);
+
+    // var sphere = o3djs.primitives.createSphere(
+    //     g_pack,
+    //     material,
+    //     5.0,   // Radius of the sphere.
+    //     20,    // Number of meridians.
+    //     30);   // Number of parallels.
+    var sphere = o3djs.primitives.createCube(
+        g_pack,
+        material, // A green phong-shaded material.
+        3);                  // The length of each side of the cube.
+
     var transform = g_pack.createObject('Transform');
-    transform.addShape(transformTable[tt].shape);
-    transform.translate(transformTable[tt].translation);
+    transform.addShape(sphere);
+    transform.translate(locs[tt]);
     transform.parent = g_client.root;
-    if (tt == 0) {
-      gs_transform = transform;
-    } else {
-      gc_transform = transform;
-    }
+    transforms.push(transform);
+
+    var sampler = g_pack.createObject('Sampler');
+    sampler.minFilter = g_o3d.Sampler.ANISOTROPIC;
+    sampler.maxAnisotropy = 4;
+    material.getParam('texSampler0').value = sampler;
+    samplers.push(sampler);
   }
+
+  o3djs.io.loadTexture(g_pack, g_imgURL, function(texture, exception) {
+    if (exception) {
+      alert(exception);
+    } else {
+      samplers[0].texture = texture;
+    }
+  });
 }
+
+//
+//     var transform = g_pack.createObject('Transform');
+//     transform.addShape(cube);
+//     transform.translate(tt == 0 ? [1, 1, 0] : [0, 1, 1]);
+//     // transforms.push(transform);
+//     transform.parent = g_client.root;
+//
+//     // var sampler = g_pack.createObject('Sampler');
+//     // material.getParam('texSampler0').value = sampler;
+//     // samplers.push(sampler);
+//   }
+//
+//   // o3djs.io.loadTexture(g_pack, g_imgURL, function(texture, exception) {
+//   //   if (exception) {
+//   //     alert(exception);
+//   //   } else {
+//   //     samplers[0].texture = texture;
+//   //     setTimeout(100, function() {
+//   //       o3djs.camera.fitContextToScene(g_client.root,
+//   //                                      g_client.width,
+//   //                                      g_client.height,
+//   //                                      g_viewInfo.drawContext);
+//   //     });
+//   //   }
+//   // });
+// }
 
 function move() {
   var t = 0.010; // 40 ms
   var x = 1000;   // sprint constant
+  var i, j, k;
+  var accels = [];
 
-  var caccel = [
-    (sloc[0] - cloc[0]) * x,
-    (sloc[1] - cloc[1]) * x,
-    (sloc[2] - cloc[2]) * x
-  ];
-  var saccel = [
-    (cloc[0] - sloc[0]) * x,
-    (cloc[1] - sloc[1]) * x,
-    (cloc[2] - sloc[2]) * x
-  ];
+  for (i = 0; i < transforms.length; i++) {
+    var accel = [0, 0, 0];
+    for (j = 0; j < transforms.length; j++) {
+      for (k = 0; k < 3; k++) {
+        accel[k] += (locs[j][k] - locs[i][k]) * x;
+      }
+    }
+
+    accels.push(accel);
+  }
 
   // Assume constant acceleration during this time
-  cvel[0] += caccel[0] * t;
-  cvel[1] += caccel[1] * t;
-  cvel[2] += caccel[2] * t;
-
-  svel[0] += saccel[0] * t;
-  svel[1] += saccel[1] * t;
-  svel[2] += saccel[2] * t;
+  for (i = 0; i < transforms.length; i++) {
+    for (j = 0; j < 3; j++) {
+      vels[i][j] += accels[i][j] * t;
+    }
+  }
 
   // Assume constant velocity
-  cloc[0] += cvel[0] * t;
-  cloc[1] += cvel[1] * t;
-  cloc[2] += cvel[2] * t;
+  for (i = 0; i < transforms.length; i++) {
+    for (j = 0; j < 3; j++) {
+      locs[i][j] += vels[i][j] * t;
+    }
+  }
 
-  sloc[0] += svel[0] * t;
-  sloc[1] += svel[1] * t;
-  sloc[2] += svel[2] * t;
-
-  gc_transform.translate(svel[0] * t, svel[1] * t, svel[2] * t);
-  gs_transform.translate(cvel[0] * t, cvel[1] * t, cvel[2] * t);
+  for (i = 0; i < transforms.length; i++)
+    transforms[i].translate(vels[i][0] * t, vels[i][1] * t, vels[i][2] * t);
+  // gc_transform.translate(svel[0] * t, svel[1] * t, svel[2] * t);
+  // gs_transform.translate(cvel[0] * t, cvel[1] * t, cvel[2] * t);
 }
