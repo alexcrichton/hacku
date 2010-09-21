@@ -49,7 +49,7 @@ function main(clientElements) {
 
   // Add the shapes to the transform heirarchy.
   createShapes();
-  
+
   setInterval(move, 80);
 }
 
@@ -87,8 +87,8 @@ function initContext() {
   // primitives are located.
   g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
       g_eyePosition,   // eye
-      [0, 0, 0],    // target
-      [0, 1, 0]);  // up
+      [0, 0, 0],       // target
+      [0, 1, 0]);      // up
 }
 
 /**
@@ -124,7 +124,7 @@ function createShapes() {
   // Add the shapes to the transforms.
   var transformTable = [
     {shape: cube, translation: cloc},
-    {shape: sphere, translation: sloc},
+    {shape: sphere, translation: sloc}
   ];
 
   for (var tt = 0; tt < transformTable.length; ++tt) {
@@ -140,7 +140,6 @@ function createShapes() {
   }
 }
 
-// 
 function move() {
   var t = 0.010; // 40 ms
   var x = 1000;   // sprint constant

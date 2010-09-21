@@ -1,4 +1,4 @@
-//= require <o3d-webgl/base>
+//= require <o3d-webgl>
 /*
  * Copyright 2009, Google Inc.
  * All rights reserved.
