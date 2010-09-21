@@ -1,4 +1,4 @@
-///= require <o3d>
+//= require <o3d>
 
 o3djs.require('o3djs.simple');
 
