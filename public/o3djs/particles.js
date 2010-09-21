@@ -39,6 +39,7 @@
 
 o3djs.provide('o3djs.particles');
 
+o3djs.require('o3djs.effect');
 o3djs.require('o3djs.math');
 
 /**
@@ -65,7 +66,7 @@ o3djs.particles.ParticleStateIds = {
  * Particle Effect strings
  * @type {!Array.<{name: string, fxString: string}>}
  */
-o3djs.particles.FX_STRINGS = [
+o3djs.particles.FX_STRINGS_CG = [
   { name: 'particle3d', fxString: '' +
     'float4x4 worldViewProjection : WORLDVIEWPROJECTION;\n' +
     'float4x4 world : WORLD;\n' +
@@ -214,7 +215,8 @@ o3djs.particles.FX_STRINGS = [
     '  float2 uv = input.uvLifeTimeFrameStart.xy;\n' +
     '  float lifeTime = input.uvLifeTimeFrameStart.z;\n' +
     '  float frameStart = input.uvLifeTimeFrameStart.w;\n' +
-    '  float3 position = input.positionStartTime.xyz;\n' +
+    '  float3 position = mul(float4(input.positionStartTime.xyz, 1),\n' +
+    '                        world).xyz;\n' +
     '  float startTime = input.positionStartTime.w;\n' +
     '  float3 velocity = mul(float4(input.velocityStartSize.xyz, 0),\n' +
     '                        world).xyz + worldVelocity;\n' +
@@ -252,7 +254,7 @@ o3djs.particles.FX_STRINGS = [
     '                         acceleration * localTime * localTime + \n' +
     '                         position;\n' +
     '\n' +
-    '  output.position = mul(float4(localPosition + world[3].xyz, 1), \n' +
+    '  output.position = mul(float4(localPosition, 1), \n' +
     '                        viewProjection);\n' +
     '  output.percentLife = percentLife;\n' +
     '  return output;\n' +
@@ -269,6 +271,231 @@ o3djs.particles.FX_STRINGS = [
     '// #o3d VertexShaderEntryPoint vertexShaderFunction\n' +
     '// #o3d PixelShaderEntryPoint pixelShaderFunction\n' +
     '// #o3d MatrixLoadOrder RowMajor\n'}];
+
+o3djs.particles.FX_STRINGS_GLSL = [
+  { name: 'particle3d', fxString: '' +
+    'uniform mat4 world;\n' +
+    'uniform mat4 worldViewProjection;\n' +
+    'uniform vec3 worldVelocity;\n' +
+    'uniform vec3 worldAcceleration;\n' +
+    'uniform float timeRange;\n' +
+    'uniform float time;\n' +
+    'uniform float timeOffset;\n' +
+    'uniform float frameDuration;\n' +
+    'uniform float numFrames;\n' +
+    '\n' +
+    'attribute vec4 position; // uv, lifeTime, frameStart\n' +
+    'attribute vec4 texCoord0; // position.xyz, startTime\n' +
+    'attribute vec4 texCoord1; // velocity.xyz, startSize\n' +
+    'attribute vec4 texCoord2; // acceleration.xyz, endSize\n' +
+    'attribute vec4 texCoord3; // spinStart.x, spinSpeed.y\n' +
+    'attribute vec4 texCoord4; // orientation\n' +
+    'attribute vec4 color; //\n' +
+    '\n' +
+    'varying vec4 v_position;\n' +
+    'varying vec2 v_texcoord;\n' +
+    'varying float v_percentLife;\n' +
+    'varying vec4 v_colorMult;\n' +
+    '\n' +
+    'void main() {\n' +
+    '  vec4 uvLifeTimeFrameStart = position;\n' +
+    '  vec4 positionStartTime = texCoord0;\n' +
+    '  vec4 velocityStartSize = texCoord1;\n' +
+    '  vec4 accelerationEndSize = texCoord2;\n' +
+    '  vec4 spinStartSpinSpeed = texCoord3;\n' +
+    '  vec4 orientation = texCoord4;\n' +
+    '  vec4 colorMult = color;\n' +
+    '  vec2 uv = uvLifeTimeFrameStart.xy;\n' +
+    '  float lifeTime = uvLifeTimeFrameStart.z;\n' +
+    '  float frameStart = uvLifeTimeFrameStart.w;\n' +
+    '  vec3 position = positionStartTime.xyz;\n' +
+    '  float startTime = positionStartTime.w;\n' +
+    '  vec3 velocity = (world * vec4(velocityStartSize.xyz, 0)).xyz\n' +
+    '      + worldVelocity;\n' +
+    '  float startSize = velocityStartSize.w;\n' +
+    '  vec3 acceleration = (world *\n' +
+    '      vec4(accelerationEndSize.xyz, 0)).xyz + worldAcceleration;\n' +
+    '  float endSize = accelerationEndSize.w;\n' +
+    '  float spinStart = spinStartSpinSpeed.x;\n' +
+    '  float spinSpeed = spinStartSpinSpeed.y;\n' +
+    '\n' +
+    '  float localTime = mod((time - timeOffset - startTime),\n' +
+    '      timeRange);\n' +
+    '  float percentLife = localTime / lifeTime;\n' +
+    '\n' +
+    '  float frame = mod(floor(localTime / frameDuration + frameStart),\n' +
+    '                     numFrames);\n' +
+    '  float uOffset = frame / numFrames;\n' +
+    '  float u = uOffset + (uv.x + 0.5) * (1.0 / numFrames);\n' +
+    '\n' +
+    '  v_texcoord = vec2(u, uv.y + 0.5);\n' +
+    '  v_colorMult = colorMult;\n' +
+    '\n' +
+    '  float size = mix(startSize, endSize, percentLife);\n' +
+    '  size = (percentLife < 0.0 || percentLife > 1.0) ? 0.0 : size;\n' +
+    '  float s = sin(spinStart + spinSpeed * localTime);\n' +
+    '  float c = cos(spinStart + spinSpeed * localTime);\n' +
+    '\n' +
+    '  vec4 rotatedPoint = vec4((uv.x * c + uv.y * s) * size, 0.0,\n' +
+    '                               (uv.x * s - uv.y * c) * size, 1.0);\n' +
+    '  vec3 center = velocity * localTime +\n' +
+    '                  acceleration * localTime * localTime + \n' +
+    '                  position;\n' +
+    '  \n' +
+    '      vec4 q2 = orientation + orientation;\n' +
+    '      vec4 qx = orientation.xxxw * q2.xyzx;\n' +
+    '      vec4 qy = orientation.xyyw * q2.xyzy;\n' +
+    '      vec4 qz = orientation.xxzw * q2.xxzz;\n' +
+    '  \n' +
+    '      mat4 localMatrix = mat4(\n' +
+    '        (1.0 - qy.y) - qz.z, \n' +
+    '        qx.y + qz.w, \n' +
+    '        qx.z - qy.w,\n' +
+    '        0,\n' +
+    '  \n' +
+    '        qx.y - qz.w, \n' +
+    '        (1.0 - qx.x) - qz.z, \n' +
+    '        qy.z + qx.w,\n' +
+    '        0,\n' +
+    '  \n' +
+    '        qx.z + qy.w, \n' +
+    '        qy.z - qx.w, \n' +
+    '        (1.0 - qx.x) - qy.y,\n' +
+    '        0,\n' +
+    '  \n' +
+    '        center.x, center.y, center.z, 1.0);\n' +
+    '  rotatedPoint = localMatrix * rotatedPoint;\n' +
+    '  gl_Position = worldViewProjection * rotatedPoint;\n' +
+    '  v_percentLife = percentLife;\n' +
+    '}\n' +
+    '\n' +
+    '// #o3d SplitMarker\n' +
+    '\n' +
+    'varying vec4 v_position;\n' +
+    'varying vec2 v_texcoord;\n' +
+    'varying float v_percentLife;\n' +
+    'varying vec4 v_colorMult;\n' +
+    '\n' +
+    '// We need to implement 1D!\n' +
+    'uniform sampler2D rampSampler;\n' +
+    'uniform sampler2D colorSampler;\n' +
+    '\n' +
+    'void main() {\n' +
+    '  vec4 colorMult = texture2D(rampSampler, \n' +
+    '      vec2(v_percentLife, 0.5)) * v_colorMult;\n' +
+    '  vec4 color = texture2D(colorSampler, v_texcoord) * colorMult;\n' +
+    '  gl_FragColor = color;\n' +
+    '}\n' +
+    '\n' +
+    '// #o3d MatrixLoadOrder RowMajor\n'},
+  { name: 'particle2d', fxString: '' +
+    'uniform mat4 viewProjection;\n' +
+    'uniform mat4 world;\n' +
+    'uniform mat4 viewInverse;\n' +
+    'uniform vec3 worldVelocity;\n' +
+    'uniform vec3 worldAcceleration;\n' +
+    'uniform float timeRange;\n' +
+    'uniform float time;\n' +
+    'uniform float timeOffset;\n' +
+    'uniform float frameDuration;\n' +
+    'uniform float numFrames;\n' +
+    '\n' +
+    'attribute vec4 position; // uv, lifeTime, frameStart\n' +
+    'attribute vec4 texCoord0; // position.xyz, startTime\n' +
+    'attribute vec4 texCoord1; // velocity.xyz, startSize\n' +
+    'attribute vec4 texCoord2; // acceleration.xyz, endSize\n' +
+    'attribute vec4 texCoord3; // spinStart.x, spinSpeed.y\n' +
+    'attribute vec4 color; //\n' +
+    '\n' +
+    'varying vec4 v_position;\n' +
+    'varying vec2 v_texcoord;\n' +
+    'varying float v_percentLife;\n' +
+    'varying vec4 v_colorMult;\n' +
+    '\n' +
+    'void main() {\n' +
+    '  vec4 uvLifeTimeFrameStart = position;\n' +
+    '  vec4 positionStartTime = texCoord0;\n' +
+    '  vec4 velocityStartSize = texCoord1;\n' +
+    '  vec4 accelerationEndSize = texCoord2;\n' +
+    '  vec4 spinStartSpinSpeed = texCoord3;\n' +
+    '  vec4 colorMult = color;\n' +
+    '  vec2 uv = uvLifeTimeFrameStart.xy;\n' +
+    '  float lifeTime = uvLifeTimeFrameStart.z;\n' +
+    '  float frameStart = uvLifeTimeFrameStart.w;\n' +
+    '  vec3 position = (world * vec4(positionStartTime.xyz, 1.0)).xyz;\n' +
+    '  float startTime = positionStartTime.w;\n' +
+    '  vec3 velocity = (world * vec4(velocityStartSize.xyz, 0)).xyz \n' +
+    '      + worldVelocity;\n' +
+    '  float startSize = velocityStartSize.w;\n' +
+    '  vec3 acceleration = (world *\n' +
+    '      vec4(accelerationEndSize.xyz, 0)).xyz + worldAcceleration;\n' +
+    '  float endSize = accelerationEndSize.w;\n' +
+    '  float spinStart = spinStartSpinSpeed.x;\n' +
+    '  float spinSpeed = spinStartSpinSpeed.y;\n' +
+    '\n' +
+    '  float localTime = mod((time - timeOffset - startTime),\n' +
+    '      timeRange);\n' +
+    '  float percentLife = localTime / lifeTime;\n' +
+    '\n' +
+    '  float frame = mod(floor(localTime / frameDuration + frameStart),\n' +
+    '                     numFrames);\n' +
+    '  float uOffset = frame / numFrames;\n' +
+    '  float u = uOffset + (uv.x + 0.5) * (1.0 / numFrames);\n' +
+    '\n' +
+    '  v_texcoord = vec2(u, uv.y + 0.5);\n' +
+    '  v_colorMult = colorMult;\n' +
+    '\n' +
+    '  vec3 basisX = viewInverse[0].xyz;\n' +
+    '  vec3 basisZ = viewInverse[1].xyz;\n' +
+    '\n' +
+    '  float size = mix(startSize, endSize, percentLife);\n' +
+    '  size = (percentLife < 0.0 || percentLife > 1.0) ? 0.0 : size;\n' +
+    '  float s = sin(spinStart + spinSpeed * localTime);\n' +
+    '  float c = cos(spinStart + spinSpeed * localTime);\n' +
+    '\n' +
+    '  vec2 rotatedPoint = vec2(uv.x * c + uv.y * s, \n' +
+    '                               -uv.x * s + uv.y * c);\n' +
+    '  vec3 localPosition = vec3(basisX * rotatedPoint.x +\n' +
+    '                                basisZ * rotatedPoint.y) * size +\n' +
+    '                         velocity * localTime +\n' +
+    '                         acceleration * localTime * localTime + \n' +
+    '                         position;\n' +
+    '\n' +
+    '  gl_Position = (viewProjection * vec4(localPosition, 1.0));\n' +
+    '  v_percentLife = percentLife;\n' +
+    '}\n' +
+    '\n' +
+    '// #o3d SplitMarker\n' +
+    '\n' +
+    'varying vec4 v_position;\n' +
+    'varying vec2 v_texcoord;\n' +
+    'varying float v_percentLife;\n' +
+    'varying vec4 v_colorMult;\n' +
+    '\n' +
+    '// We need to implement 1D!\n' +
+    'uniform sampler2D rampSampler;\n' +
+    'uniform sampler2D colorSampler;\n' +
+    '\n' +
+    'void main() {\n' +
+    '  vec4 colorMult = texture2D(rampSampler, \n' +
+    '      vec2(v_percentLife, 0.5)) * v_colorMult;\n' +
+    '  vec4 color = texture2D(colorSampler, v_texcoord) * colorMult;\n' +
+    '  gl_FragColor = color;\n' +
+    '}\n' +
+    '\n' +
+    '// #o3d MatrixLoadOrder RowMajor\n'}];
+
+
+/**
+ * Sets the current shaders language to be in accordance with effect.js.
+ */
+o3djs.particles.useCorrectShaders_ = function() {
+  o3djs.particles.FX_STRINGS = o3djs.particles.FX_STRINGS_CG;
+  if (o3djs.effect.LANGUAGE == 'glsl') {
+    o3djs.particles.FX_STRINGS = o3djs.particles.FX_STRINGS_GLSL;
+  }
+};
+
 
 /**
  * Corner values.
@@ -333,6 +560,7 @@ o3djs.particles.ParticleSystem = function(pack,
   var o3d = o3djs.base.o3d;
   var particleStates = [];
   var effects = [];
+  o3djs.particles.useCorrectShaders_();
   for (var ee = 0; ee < o3djs.particles.FX_STRINGS.length; ++ee) {
     var info = o3djs.particles.FX_STRINGS[ee];
     var effect = pack.createObject('Effect');
@@ -1278,4 +1506,5 @@ o3djs.particles.Trail.prototype.birthParticles = function(position) {
                         this.perParticleParamSetter);
   this.birthIndex_ += numParticles;
 };
+
 

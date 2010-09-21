@@ -1,3 +1,3 @@
 HackU::Application.routes.draw do
-  match ':action' => 'static'
+  match ':action' => 'static', :action => /sample/
 end

@@ -1,64 +1,146 @@
 //= require <o3d>
 
-o3djs.require('o3djs.simple');
+o3djs.base.o3d = o3d;
+o3djs.require('o3djs.webgl');
+o3djs.require('o3djs.math');
+o3djs.require('o3djs.rendergraph');
+o3djs.require('o3djs.primitives');
+o3djs.require('o3djs.material');
+
 
 // Events
 // init() once the page has finished loading.
-window.onload = init;
+window.onload = initClient;
 
 // global variables
 // we make these global so we can easily access them from the debugger.
-var g_simple;
-var g_cube;
-var g_sphere;
-var g_finished = false;  // for selenium testing
+var g_o3dElement;
+var g_client;
+var g_o3d;
+var g_math;
+var g_pack;
+var g_viewInfo;
+var g_eyePosition = [3, 4, 14];
 
-var sloc = [40, 0, 0];
-var cloc = [0, 40, 0];
+var g_cube, g_sphere, gc_transform, gs_transform;
+var sloc = [1, 0, 0];
+var cloc = [0, -2, 0];
 var svel = [0, 0, 0];
 var cvel = [0, 0, 0];
+
 
 /**
  * Creates the client area.
  */
-function init() {
-  o3djs.util.makeClients(initStep2);
+function initClient() {
+  o3djs.webgl.makeClients(main);
 }
 
 /**
- * Initializes our app.
+ * Initializes global variables, positions camera, draws shapes.
  * @param {Array} clientElements Array of o3d object elements.
  */
-function initStep2(clientElements) {
-  // Initializes global variables and libraries.
-  var o3dElement = clientElements[0];
+function main(clientElements) {
+  // Init global variables.
+  initGlobals(clientElements);
 
-  // Create an o3djs.simple object to manage things in a simple way.
-  g_simple = o3djs.simple.create(o3dElement);
+  // Set up the view and projection transformations.
+  initContext();
 
-  // Create a cube.
-  g_cube = g_simple.createCube(50);
-
-  // You should now have a cube on the screen!
-  // Examples of other commands you can issue (live from firebug if you want)
-  //
-  g_cube.transform.translate(cloc[0], cloc[1], cloc[2]);  // translate the cube.
-  g_cube.setDiffuseColor(1, 0, 0, 1);  // make the cube red.
-  // g_cube.loadTexture("http://someplace.org/somefile.jpg");  // now textured.
-  // g_simple.setCameraPosition(200, 100, -50);  // move the camera
+  // Add the shapes to the transform heirarchy.
+  createShapes();
   
-  // g_simple.setCameraTarget(0, 10, 0);  // move the camera's target
-  // g_simple.setFieldOfView(30 * Math.PI / 180);  // change the field of view.
-  g_sphere = g_simple.createSphere(35, 10);  // create a sphere.
-  g_sphere.transform.translate(sloc[0], sloc[1], sloc[2]);
-  //
-  // Try typing these commands from firebug live!
-
-  g_finished = true;  // for selenium testing.
-
   setInterval(move, 80);
 }
 
+/**
+ * Initializes global variables and libraries.
+ */
+function initGlobals(clientElements) {
+  g_o3dElement = clientElements[0];
+  window.g_client = g_client = g_o3dElement.client;
+  g_o3d = g_o3dElement.o3d;
+  g_math = o3djs.math;
+
+  // Create a pack to manage the objects created.
+  g_pack = g_client.createPack();
+
+  // Create the render graph for a view.
+  g_viewInfo = o3djs.rendergraph.createBasicView(
+      g_pack,
+      g_client.root,
+      g_client.renderGraphRoot);
+}
+
+/**
+ * Sets up reasonable view and projection matrices.
+ */
+function initContext() {
+  // Set up a perspective transformation for the projection.
+  g_viewInfo.drawContext.projection = g_math.matrix4.perspective(
+      g_math.degToRad(30), // 30 degree frustum.
+      g_o3dElement.clientWidth / g_o3dElement.clientHeight, // Aspect ratio.
+      1,                  // Near plane.
+      5000);              // Far plane.
+
+  // Set up our view transformation to look towards the world origin where the
+  // primitives are located.
+  g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
+      g_eyePosition,   // eye
+      [0, 0, 0],    // target
+      [0, 1, 0]);  // up
+}
+
+/**
+ * Creates a material based on the given single color.
+ * @param {!o3djs.math.Vector4} baseColor A 4-component vector with
+ *     the R,G,B, and A components of a color.
+ * @return {!o3d.Material} A phong material whose overall pigment is
+ *     baseColor.
+ */
+function createMaterial(baseColor) {
+  // Create a new, empty Material object.
+  return o3djs.material.createBasicMaterial(g_pack, g_viewInfo, baseColor);
+}
+
+/**
+ * Creates shapes using the primitives utility library, and adds them to the
+ * transform graph at the root node.
+ */
+function createShapes() {
+  var cube = o3djs.primitives.createCube(
+      g_pack,
+      createMaterial([0,1,0,1]), // A green phong-shaded material.
+      Math.sqrt(2));                  // The length of each side of the cube.
+
+  var sphere = o3djs.primitives.createSphere(
+      g_pack,
+      createMaterial([1,0,0,1]),
+      1.0,   // Radius of the sphere.
+      30,    // Number of meridians.
+      20);   // Number of parallels.
+  g_sphere = sphere;
+  g_cube = cube;
+  // Add the shapes to the transforms.
+  var transformTable = [
+    {shape: cube, translation: cloc},
+    {shape: sphere, translation: sloc},
+  ];
+
+  for (var tt = 0; tt < transformTable.length; ++tt) {
+    var transform = g_pack.createObject('Transform');
+    transform.addShape(transformTable[tt].shape);
+    transform.translate(transformTable[tt].translation);
+    transform.parent = g_client.root;
+    if (tt == 0) {
+      gs_transform = transform;
+    } else {
+      gc_transform = transform;
+    }
+  }
+}
+
+// 
 function move() {
   var t = 0.010; // 40 ms
   var x = 1000;   // sprint constant
@@ -92,6 +174,6 @@ function move() {
   sloc[1] += svel[1] * t;
   sloc[2] += svel[2] * t;
 
-  g_sphere.transform.translate(svel[0] * t, svel[1] * t, svel[2] * t);
-  g_cube.transform.translate(cvel[0] * t, cvel[1] * t, cvel[2] * t);
+  gc_transform.translate(svel[0] * t, svel[1] * t, svel[2] * t);
+  gs_transform.translate(cvel[0] * t, cvel[1] * t, cvel[2] * t);
 }
