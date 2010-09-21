@@ -198,29 +198,7 @@ o3djs.serialization.Deserializer = function(pack, json) {
     },
 
     'o3d.TextureCUBE': function(deserializer, json) {
-      if ('o3d.negx_uri' in json.params) {
-        // Cube map comprised of six separate textures.
-        var param_names = [
-            'o3d.posx_uri',
-            'o3d.negx_uri',
-            'o3d.posy_uri',
-            'o3d.negy_uri',
-            'o3d.posz_uri',
-            'o3d.negz_uri'
-        ];
-        var rawDataArray = [];
-        for (var i = 0; i < param_names.length; i++) {
-          var uri = json.params[param_names[i]].value;
-          var rawData = deserializer.archiveInfo.getFileByURI(uri);
-          if (!rawData) {
-            throw 'Could not find texture ' + uri + ' in the archive';
-          }
-          rawDataArray.push(rawData);
-        }
-        // Cube map faces should not be flipped.
-        return o3djs.texture.createTextureFromRawDataArray(
-            pack, rawDataArray, true, false);
-      } else if ('o3d.uri' in json.params) {
+      if ('o3d.uri' in json.params) {
         var uri = json.params['o3d.uri'].value;
         var rawData = deserializer.archiveInfo.getFileByURI(uri);
         if (!rawData) {
@@ -289,12 +267,10 @@ o3djs.serialization.Deserializer = function(pack, json) {
 
     'o3d.Skin': function(deserializer, object, json) {
       if ('custom' in json) {
-        if ('binaryRange' in json.custom) {
-          var rawData = deserializer.archiveInfo.getFileByURI('skins.bin');
-          object.set(rawData,
-                     json.custom.binaryRange[0],
-                     json.custom.binaryRange[1] - json.custom.binaryRange[0]);
-        }
+        var rawData = deserializer.archiveInfo.getFileByURI('skins.bin');
+        object.set(rawData,
+                   json.custom.binaryRange[0],
+                   json.custom.binaryRange[1] - json.custom.binaryRange[0]);
       }
     },
 

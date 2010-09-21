@@ -38,7 +38,6 @@ o3djs.provide('o3djs.fps');
 
 o3djs.require('o3djs.rendergraph');
 o3djs.require('o3djs.canvas');
-o3djs.require('o3djs.effect');
 o3djs.require('o3djs.math');
 o3djs.require('o3djs.primitives');
 
@@ -66,44 +65,29 @@ o3djs.fps.PERF_BAR_COLORS = [
   [1, 0, 0, 1]];
 
 /**
- * Generate a shader to be used by the pref quads.
- * @return {string}
+ * The shader code used by the pref quads.
+ * @type {string}
  */
-o3djs.fps.buildShaderString = function() {
-  var p = o3djs.effect;
-
-  var varyingDecls = p.BEGIN_OUT_STRUCT +
-    p.VARYING + p.FLOAT4 + ' ' +
-    p.VARYING_DECLARATION_PREFIX + 'position' +
-    p.semanticSuffix('POSITION') + ';\n' +
-    p.END_STRUCT;
-
-  return '' +
-    'uniform ' + p.MATRIX4 + ' worldViewProjection' +
-    p.semanticSuffix('WORLDVIEWPROJECTION') + ';\n' +
-    '\n' +
-    p.BEGIN_IN_STRUCT +
-    p.ATTRIBUTE + p.FLOAT4 + ' position' +
-    p.semanticSuffix('POSITION') + ';\n' +
-    p.END_STRUCT +
-    '\n' +
-    varyingDecls +
-    '\n' +
-    p.beginVertexShaderMain() +
-    '  ' + p.VERTEX_VARYING_PREFIX + 'position = ' +
-    p.mul(p.ATTRIBUTE_PREFIX + 'position',
-        'worldViewProjection') + ';\n' +
-    p.endVertexShaderMain() +
-    '\n' +
-    p.pixelShaderHeader() +
-    'uniform ' + p.FLOAT4 + ' color;\n' +
-    p.repeatVaryingDecls(varyingDecls) +
-    p.beginPixelShaderMain() +
-    p.endPixelShaderMain('color') +
-    p.entryPoints() +
-    p.matrixLoadOrder();
-};
-
+o3djs.fps.CONST_COLOR_EFFECT =
+    'float4x4 worldViewProjection : WorldViewProjection;\n' +
+    'float4 color;\n' +
+    'struct a2v {\n' +
+    ' float4 pos : POSITION;\n' +
+    '};\n'+
+    'struct v2f {\n' +
+    '  float4 pos : POSITION;\n' +
+    '};\n' +
+    'v2f vsMain(a2v IN) {\n' +
+    '  v2f OUT;\n' +
+    '  OUT.pos = mul(IN.pos, worldViewProjection);\n' +
+    '  return OUT;\n' +
+    '}\n' +
+    'float4 psMain(v2f IN): COLOR {\n' +
+    '  return color;\n' +
+    '}\n' +
+    '// #o3d VertexShaderEntryPoint vsMain\n' +
+    '// #o3d PixelShaderEntryPoint psMain\n' +
+    '// #o3d MatrixLoadOrder RowMajor\n';
 
 /**
  * Creates an object for displaying frames per second.
@@ -238,7 +222,7 @@ o3djs.fps.FPSManager = function(pack, clientWidth, clientHeight, opt_parent) {
   // create a unit plane with a const color effect we can use to draw
   // rectangles.
   this.colorEffect_ = pack.createObject('Effect');
-  this.colorEffect_.loadFromFXString(o3djs.fps.buildShaderString());
+  this.colorEffect_.loadFromFXString(o3djs.fps.CONST_COLOR_EFFECT);
   this.colorMaterial_ = pack.createObject('Material');
   this.colorMaterial_.effect = this.colorEffect_;
   this.colorMaterial_.drawList = this.viewInfo.zOrderedDrawList;
@@ -482,5 +466,3 @@ o3djs.fps.ColorRect.prototype.setSize = function(width, height) {
 o3djs.fps.ColorRect.prototype.setColor = function(color) {
   this.colorParam_.value = color;
 };
-
-
