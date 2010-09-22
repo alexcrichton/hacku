@@ -19,6 +19,7 @@ var g_pack;
 var g_viewInfo;
 var g_eyePosition = [6, 8, 28];
 var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
+var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg';
 var samplers = [], transforms = [];
 var locs = [
   [1, 1, 1],
@@ -90,7 +91,7 @@ function initContext() {
   g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
       g_eyePosition,   // eye
       [0, 0, 0],    // target
-      [0, 1, 0]);  // up
+      [-1, 0, 0]);  // up
 }
 
 /**
@@ -140,6 +141,13 @@ function createShapes() {
       alert(exception);
     } else {
       samplers[0].texture = texture;
+    }
+  });
+  o3djs.io.loadTexture(g_pack, g_imgURL2, function(texture, exception) {
+    if (exception) {
+      alert(exception);
+    } else {
+      samplers[1].texture = texture;
     }
   });
 }
