@@ -61,6 +61,8 @@ This does things, flesh this out more
 
 We need a photo for each artist, this is a function which when given a list of yahoo IDs of artists, it will return a list of URLs to the photos of the artists in the same order as provided, JSON encoded.
 
+If we use last.fm, it looks like all of the images can come from those queries. We should just throw those in a database as well!
+
 ## Possible Extensions
 
 1. Get a list of artists from a service (uploaded, last.fm, pandora?) and show how they group together
