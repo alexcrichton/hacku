@@ -12,7 +12,21 @@ Given a list of artist IDs (all Yahoo IDs), return a JSON encoded string which r
 ]
 </pre>
 
-Where `relevance` is a float 0-100 where 0 is not related at all and 100 is virtually the same artist. This list should never have `artistID1 = artistID2`.
+Where `relevance` is a float 0-1 where 0 is not related at all and 1 is virtually the same artist. This list should never have `artistID1 = artistID2`.
+
+### last.fm similar artists
+
+They have a web service which gives similar artists to a given artist and also gives you a score for the similarity.
+
+We can access this through YQL through the `lastfm.artist.getsimilar` table with the following query:
+
+<pre>
+select * from lastfm.artist.getsimilar where api_key="2116c8771c6a03bb89c24a0935bea3a4" and artist="Lady Gaga" and limit="1000"
+</pre>
+
+The `limit="1000"` doesn't actually give 1000 artists, but it gives 250 it looks like. This should be sufficient for our purposes.
+
+I was thinking that because this service is slow (0.5s for each request) we could cache results in our own database for the hackathon and that way have a speedier demo when we ask about a lot of artists
 
 ## Physics JS
 
