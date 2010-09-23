@@ -18,7 +18,7 @@ Where `relevance` is a float 0-1 where 0 is not related at all and 1 is virtuall
 
 They have a web service which gives similar artists to a given artist and also gives you a score for the similarity.
 
-We can access this through YQL through the `lastfm.artist.getsimilar` table with the following query:
+We can access this through YQL through the `lastfm.artist.getsimilar` table with the following [query](http://developer.yahoo.com/yql/console/?q=show%20tables&env=store://datatables.org/alltableswithkeys#h=select%20*%20from%20lastfm.artist.getsimilar%20where%20api_key%3D%222116c8771c6a03bb89c24a0935bea3a4%22%20and%20artist%3D%22Lady%20Gaga%22%20and%20limit%3D%221000%22):
 
 <pre>
 select * from lastfm.artist.getsimilar where api_key="2116c8771c6a03bb89c24a0935bea3a4" and artist="Lady Gaga" and limit="1000"
