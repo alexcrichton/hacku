@@ -1,0 +1,7 @@
+/* line 4, ../../app/stylesheets/application.scss */
+body {
+  line-height: 1.5;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  color: #333333;
+  font-size: 75%;
+}
