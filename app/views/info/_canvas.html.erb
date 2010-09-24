@@ -1,0 +1,42 @@
+<div id="o3d" style="width: 600px; height: 600px;"></div>
+
+<div style="display:none">
+<!-- Start of effect -->
+<textarea id="vshader">
+  // World View Projection matrix that will transform the input vertices
+  // to screen space.
+  uniform mat4 worldViewProjection;
+
+  // input parameters for our vertex shader
+  attribute vec4 position;
+  attribute vec2 texCoord0;
+
+  varying vec2 uvs;
+
+  /**
+   * The vertex shader simply transforms the input vertices to screen space.
+   */
+  void main() {
+    // Multiply the vertex positions by the worldViewProjection matrix to
+    // transform them to screen space.
+    gl_Position = worldViewProjection * position;
+    uvs = texCoord0;
+  }
+
+</textarea>
+<textarea id="pshader">
+
+  // Color to draw with.
+  uniform sampler2D texSampler0;
+
+  varying vec2 uvs;
+
+  /**
+   * This pixel shader just returns the color red.
+   */
+  void main() {
+    gl_FragColor = texture2D(texSampler0, uvs);
+  }
+</textarea>
+<!-- End of effect -->
+</div>

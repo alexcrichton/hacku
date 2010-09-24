@@ -1,22 +1,22 @@
 //= require <jquery/core>
 //= require <jquery/ui>
 
-$.ajaxSetup({error: error});
+jQuery.ajaxSetup({error: error});
 
 function error() {
-  $('.ui-dialog-content').dialog('close');
-  $('img.loading').remove();
-  $('<p>Server Error... Please Try later</p>').dialog({
+  jQuery('.ui-dialog-content').dialog('close');
+  jQuery('img.loading').remove();
+  jQuery('<p>Server Error... Please Try later</p>').dialog({
     modal:true,
     close: function() {
-      $('.ui-dialog').remove();
+      jQuery('.ui-dialog').remove();
     }
   });
 }
 
-$['small-ajax'] = "<%= escape_javascript image_tag('ajax-small.gif', 
+jQuery['small-ajax'] = "<%= escape_javascript image_tag('ajax-small.gif',
     :class => 'loading') %>";
-$['big-ajax'] = "<%= escape_javascript image_tag('ajax-big.gif', 
+jQuery['big-ajax'] = "<%= escape_javascript image_tag('ajax-big.gif',
     :class => 'loading') %>";
-$['huge-ajax'] = "<%= escape_javascript image_tag('ajax-huge.gif', 
+jQuery['huge-ajax'] = "<%= escape_javascript image_tag('ajax-huge.gif',
     :class => 'loading') %>";

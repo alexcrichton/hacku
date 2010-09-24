@@ -1,3 +1,6 @@
 HackU::Application.routes.draw do
-  match ':action' => 'static', :action => /sample/
+  get ':action' => 'static', :action => /sample/
+  put 'similarity(.:format)' => 'info#similarity'
+
+  root :to => 'static#index'
 end

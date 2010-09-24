@@ -1,0 +1,13 @@
+Y = YUI().use('anim', 'node', function(Y){
+  Y.one('body').append("<%= escape_javascript render('canvas') %>");
+  Y.one('#o3d').setStyles({
+    width: '98%',
+    height: '500px'
+  });
+
+  jQuery('#form').slideUp(function() {
+    jQuery(this).remove();
+  });
+
+  initClient(<%= raw @output %>);
+});

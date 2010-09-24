@@ -1,20 +1,20 @@
 //= require <jquery/rails>
 
-$.extend($, {
+jQuery.extend(jQuery, {
   railsPut: function(config) {
-    var csrf_token = $('meta[name=csrf-token]').attr('content'),
-        csrf_param = $('meta[name=csrf-param]').attr('content');
+    var csrf_token = jQuery('meta[name=csrf-token]').attr('content'),
+        csrf_param = jQuery('meta[name=csrf-param]').attr('content');
 
     if (!config.data) config.data = {};
     config.data[csrf_param] = csrf_token;
     config.type = 'PUT';
     config.dataType = 'script';
 
-    $.ajax(config);
+    jQuery.ajax(config);
   }
 });
 
-$(function() {
+jQuery(function($) {
   $('*[data-remote]').live('ajax:loading', function () {
     $($['ajax-small']).insertAfter(this);
   });
