@@ -2,17 +2,27 @@
 
 ## Relevance Database
 
-Given a list of artist IDs (all Yahoo IDs), return a JSON encoded string which represents an array of the form:
+Given a list of artist names, return a JSON encoded string which represents an array of the form:
 
 <pre>
-[
-  [artistXID1, artistYID2, relevance],
-  [artistAID1, artistBID2, relevance],
-  ...
-]
+{
+  'images' => {
+    'artist1' => 'http://image',
+    'artist2' => 'http://image2',
+    ...
+  },
+  'artists' => ['artist1', 'aritst2', ...],
+  'similarities' => [
+    ['artist1', 'artist2', simliarity1],
+    ['artist1', 'artist3', similarity2],
+    ...
+  ]
+}
 </pre>
 
 Where `relevance` is a float 0-1 where 0 is not related at all and 1 is virtually the same artist. This list should never have `artistID1 = artistID2`.
+
+This program prints to `STDOUT`
 
 ### last.fm similar artists
 
