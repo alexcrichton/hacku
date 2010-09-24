@@ -27,7 +27,7 @@ var vels = [
   [0, 0, 0],
   [0, 0, 0]
 ];
-var images, similarities;
+var images, similarities, artists;
 
 /**
  * Creates the client area.
@@ -35,6 +35,7 @@ var images, similarities;
 function initClient(hash) {
   images            = hash.images;
   similarities      = hash.similarities;
+  artists           = hash.artists;
   window.g_finished = false;  // for selenium testing.
   o3djs.webgl.makeClients(main);
 }
