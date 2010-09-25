@@ -2,21 +2,13 @@ require 'net/https'
 
 module FbGetFriends
 
-  def get_facebook_friends(user, access_token)
-
-	p user
-	p access_token
-
-    mapping = pullOutFriends get_friends_response(user, access_token)
-
-	puts mapping
-
-    mapping
+  def get_facebook_friends user, access_token
+    pullOutFriends get_friends_response(user, access_token)
   end
 
   private
 
-  def get_friends_response(user = 'me', access_token = 'nil')
+  def get_friends_response user, access_token
     url = user +'/friends?access_token=' + access_token
     Rails.logger.debug "Requesting from: #{url}"
     n   = Net::HTTP.new 'graph.facebook.com', 443
@@ -32,13 +24,13 @@ module FbGetFriends
     body
   end
 
-  def pullOutFriends(download_response)
-    response = ActiveSupport::JSON.decode(download_response)["data"]
+  def pullOutFriends download_response
+    response = ActiveSupport::JSON.decode(download_response)['data']
 
     friends = []
 
     for blocks in response
-      friends << [blocks["id"], blocks["name"]]
+      friends << [blocks['id'], blocks['name']]
     end
 
     friends
