@@ -2,19 +2,14 @@
 
 ## Relevance Database
 
-Given a list of artist names, return a JSON encoded string which represents an array of the form:
+Given an artist name, return a JSON encoded string which represents an array of the form:
 
 <pre>
 {
-  'images' => {
-    'artist1' => 'http://image',
-    'artist2' => 'http://image2',
-    ...
-  },
-  'artists' => ['artist1', 'aritst2', ...],
+  'image' => 'http://image of artist',
   'similarities' => [
-    ['artist1', 'artist2', simliarity1],
-    ['artist1', 'artist3', similarity2],
+    ['artist', 'artist2', simliarity1],
+    ['artist', 'artist3', similarity2],
     ...
   ]
 }
