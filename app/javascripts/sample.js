@@ -8,6 +8,7 @@ o3djs.require('o3djs.rendergraph');
 o3djs.require('o3djs.primitives');
 o3djs.require('o3djs.material');
 o3djs.require('o3djs.io');
+o3djs.require('o3djs.picking');
 
 window.onload = initClient;
 
@@ -258,6 +259,7 @@ function move(){
   for (i = 0; i < transforms.length; i++) {
     for (var j = 0; j < 3; j++) {
       vels[i][j] += accels[i][j] * t;
+	  vels[i][j] *= .9;
       locs[i][j] += vels[i][j] * t;
     }
     len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+
@@ -270,7 +272,7 @@ function move(){
     transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
   }
 
-  if(x>0) x -= 1;
+  if(x>0) x -= .5;
   console.log(x);
 
 }
