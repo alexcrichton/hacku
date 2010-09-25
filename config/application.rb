@@ -38,5 +38,10 @@ module HackU
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+
+    config.to_prepare do
+      require 'similarities'
+      require 'fb_get_artists'
+    end
   end
 end
