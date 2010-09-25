@@ -21,22 +21,30 @@ var g_viewInfo;
 var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2;
 var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
 var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg';
-var g_imgURL3 = 'http://www.teamdc.org/images/frisbee.png'
+var g_imgURL3 = 'http://sphotos.ak.fbcdn.net/photos-ak-snc1/v681/208/58/1428210723/n1428210723_30139529_9667.jpg';
+var g_imgURL4 = 'http://hphotos-snc3.fbcdn.net/hs202.snc3/20945_253078189364_541249364_4399403_3781294_n.jpg';
+var g_imgURL5 = 'http://sphotos.ak.fbcdn.net/photos-ak-sf2p/v126/163/37/1363230355/n1363230355_30196483_1039.jpg';
 var samplers = [], transforms = [];
 var locs = [
   [1, 0, 0],
   [0, 1, 0],
-  [0, 0, 1]
+  [0, 0, 1],
+  [1.4,1.4,0],
+  [0,1.4,1.4]
 ];
 var vels = [
+  [0, 0, 0],
+  [0, 0, 0],
   [0, 0, 0],
   [0, 0, 0],
   [0, 0, 0]
 ];
 var similar = [
-  [0,1,.75],
-  [1,0,.25],
-  [.75,.25,0]
+   [0, 1, 0, 0, .5],
+   [1, 0, 0, 0, .5],
+   [0, 0, 0, 1, .5],
+   [0, 0, 1, 0, .5],
+   [.5, .5, .5, .5, 0]
 ];
 var x = 1000; //spring constant
 
@@ -154,7 +162,7 @@ function createShapes() {
   cubeEffect.loadVertexShaderFromString(vertexShaderString);
   cubeEffect.loadPixelShaderFromString(pixelShaderString);
 
-  for (var tt = 0; tt < 3; ++tt) {
+  for (var tt = 0; tt < 5; ++tt) {
     var material      = g_pack.createObject('Material');
     material.drawList = g_viewInfo.performanceDrawList;
     material.effect   = cubeEffect;
@@ -206,6 +214,22 @@ function createShapes() {
     samplers[2].texture = texture;
   }
   });
+  o3djs.io.loadTexture(g_pack, g_imgURL4, function(texture, exception) {
+  if (exception) {
+	alert(exception);
+  } else {
+	samplers[3].texture = texture;
+  }
+  });
+  o3djs.io.loadTexture(g_pack, g_imgURL5, function(texture, exception) {
+  if (exception) {
+    alert(exception);
+  } else {
+    samplers[4].texture = texture;
+  }
+  });
+
+
 }
 
 function move(){
@@ -222,8 +246,8 @@ function move(){
       }
       offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
       offsetDiff = offset - (2 - similar[i][j]*1.95);
-      force = (-1) * offset * x / 4;
-      forceVec = [force*posDiff[0]/offsetDiff,force*posDiff[1]/offsetDiff,force*posDiff[2]/offsetDiff];
+      force = (-1) * offsetDiff * x / 2;
+      forceVec = [force*posDiff[0]/offset,force*posDiff[1]/offset,force*posDiff[2]/offset];
       accel[0] += forceVec[0];
       accel[1] += forceVec[1];
       accel[2] += forceVec[2];
@@ -238,7 +262,8 @@ function move(){
     }
     len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+
                  locs[i][2]*locs[i][2]));
-    locs[i] = [ locs[i][0] / len , locs[i][1] / len , locs[i][2] / len ];
+	if(len != 0) locs[i] = [ locs[i][0] / len , locs[i][1] / len , 
+							 locs[i][2] / len ];
   }
 
   for(i = 0; i < transforms.length; i++){
@@ -246,6 +271,7 @@ function move(){
   }
 
   if(x>0) x -= 1;
+  console.log(x);
 
 }
 
