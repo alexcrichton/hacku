@@ -37,7 +37,7 @@ function initClient(hash) {
   artists           = hash.artists;
 
   for (var i = 0; i < artists.length; i++) {
-    vels.push([0, 0, 0]);
+    vels.push([Math.random() * 5, Math.random() * 5, Math.random() * 5]cd);
 
     var vec = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
     var mag = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
@@ -267,7 +267,7 @@ function createShapes() {
 }
 
 function move(){
-  var t = .005;
+  var t = .05;
   var accels = [];
   var i, j, accel, posDiff, offsetDiff, force, forceVec, len;
   for(i = 0; i < transforms.length; i++){
@@ -292,6 +292,7 @@ function move(){
   for (i = 0; i < transforms.length; i++) {
     for (var j = 0; j < 3; j++) {
       vels[i][j] += accels[i][j] * t;
+    vels[i][j] *= .6;
       locs[i][j] += vels[i][j] * t;
     }
     len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+
@@ -306,7 +307,8 @@ function move(){
     }
   }
 
-  if(x>0) x -= 1;
+  //if(x>0) x -= .0001;
+  // console.log(x);
 }
 
 function debug_array(arr){
