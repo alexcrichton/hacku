@@ -1,13 +1,19 @@
 class InfoController < ApplicationController
 
   include FbGetArtists
+  include FbGetFriends
 
   respond_to :js
   before_filter :require_user
 
   def similarity
-    @artists = params[:q].split("\n").map{ |s| s.split(',') }.flatten
-    @artists.map!(&:chomp)
+
+    @ids = params['friends_input'].split(",")
+    @ids << get_facebook_cookie['uid']
+
+    @hash = get_facebook_artists @ids, current_user
+
+    @artists = @hash.values.flatten.uniq
 
     if true
       @output = {
@@ -26,9 +32,10 @@ class InfoController < ApplicationController
     respond_with @output
   end
 
-  def facebook_artists
-    @artists = get_facebook_artists(params[:users].split(',').map(&:chomp),
-      current_user)
-    respond_with @artists
+  def grabfriends
+    @friends = Rails.cache.fetch(get_facebook_cookie['uid'] + '_friends') do
+      get_facebook_friends(get_facebook_cookie['uid'], current_user)
+    end
   end
+
 end

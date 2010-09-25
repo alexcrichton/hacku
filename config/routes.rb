@@ -4,9 +4,10 @@ HackU::Application.routes.draw do
 
   get ':action' => 'static', :action => /sample|graph/
   put 'similarity(.:format)' => 'info#similarity'
-  put 'facebook_artists(.:format)' => 'info#facebook_artists'
 
   get 'graph' => 'static#graph'
 
   root :to => 'sessions#redirect'
+
+  get 'grabfriends(.:format)' => 'info#grabfriends'
 end

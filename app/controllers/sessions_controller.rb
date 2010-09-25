@@ -17,8 +17,7 @@ class SessionsController < ApplicationController
           Rails.application.config.fb_secret,
           params[:code])
 
-      self.current_user = access_token_hash['access_token']
-      flash[:success]   = 'Authentication successful.'
+      flash[:success] = 'Authentication successful.'
 
       redirect_to graph_path
     end
