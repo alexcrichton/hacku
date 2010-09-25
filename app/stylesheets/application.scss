@@ -3,6 +3,7 @@
 
 body {
   @include blueprint-typography-body(12px);
+/*  height: 100%;*/
 }
 
 #form {
@@ -12,6 +13,7 @@ body {
 html {
   @include linear-gradient(color-stops(darken(#b5cdcf, 10%), white));
   background-repeat: repeat-x;
+  height: 100%;
 }
 
 #load_image {
@@ -23,6 +25,7 @@ html {
 #wrapper {
   margin-top: 50px;
   overflow: auto;
+  height: 500px;
 
   h1 {
     margin: 0 auto;
@@ -32,9 +35,10 @@ html {
   input[type=submit] {
     display: block;
     margin: 0 auto;
-    width: 600px;
+    width: 80px;
+    height: 20px;
 
-    margin-top: 100px;
+    margin-top: 200px;
 
     -webkit-appearance: button;
     -moz-appearance: button;
@@ -43,7 +47,10 @@ html {
 
     @include border-radius(2px);
     @include linear-gradient(color-stops(#fff, #ddd));
+    @include scale(8);
 
-    font-size: 800%;
+    &:active {
+      @include linear-gradient(color-stops(#ccc, #ddd));
+    }
   }
 }

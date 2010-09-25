@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
 
   def new
     if current_user
-      redirect_to graph_path
+      # redirect_to graph_path
     end
   end
 

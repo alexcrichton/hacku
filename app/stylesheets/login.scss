@@ -1,3 +1,5 @@
+@import "compass/css3";
+
 #login_link {
   text-align: center;
   display: block;
@@ -7,4 +9,8 @@
   text-decoration: none;
 
   margin-top: 300px;
+
+  span {
+    @include scale(10, 10);
+  }
 }
