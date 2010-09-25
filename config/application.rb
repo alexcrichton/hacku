@@ -43,6 +43,7 @@ module HackU
       load 'fb_get_artists.rb'
       load 'fb_get_friends.rb'
       load 'similarities.rb'
+      load 'stats.rb'
     end
   end
 end

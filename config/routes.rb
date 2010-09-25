@@ -4,6 +4,7 @@ HackU::Application.routes.draw do
 
   get ':action' => 'static', :action => /graph/
   put 'similarity(.:format)' => 'info#similarity'
+  get 'statistics(.:format)' => 'info#statistics'
 
   get 'graph' => 'static#graph'
 

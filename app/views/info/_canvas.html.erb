@@ -1,3 +1,5 @@
+<% javascript 'jquery/ui' %>
+
 <div id="o3d" style="width: 600px; height: 600px;"></div>
 
 <div style="display:none">
@@ -45,6 +47,9 @@
   <div class='side'>
     <h1>Artists Hovered Over</h1>
     <div id='artists'>
+    </div>
+    <div id='button' style='display:none;'>
+      <%= link_to 'Statistics', '#', :id => 'statistics' %>
     </div>
   </div>
 

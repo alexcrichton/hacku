@@ -1,4 +1,4 @@
-YUI().use('anim', 'node', function(Y){
+YUI().use('anim', 'node', 'io', function(Y){
   Y.one('body').append("<%= escape_javascript render('canvas') %>");
   var side = (jQuery(window).height() * 0.95) + 'px';
   Y.one('#o3d').setStyles({
@@ -23,6 +23,15 @@ YUI().use('anim', 'node', function(Y){
         showUser(e.target.getAttribute('data-uid'));
       } else {
         hideUser(e.target.getAttribute('data-uid'));
+      }
+    });
+
+    Y.io('/statistics.js', {
+      data: 'artists=' + encodeURI(<%= raw @artists.to_json %>),
+      on: {
+        success: function(g, o) {
+          eval(o.responseText);
+        }
       }
     });
   });

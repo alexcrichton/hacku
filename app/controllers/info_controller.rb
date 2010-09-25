@@ -3,6 +3,7 @@ class InfoController < ApplicationController
   include FbGetArtists
   include FbGetFriends
   include Similarities
+  include Stats
 
   respond_to :js
   before_filter :require_user
@@ -24,6 +25,12 @@ class InfoController < ApplicationController
 
   def grabfriends
     @friends = current_friends
+  end
+
+  def statistics
+    @stats = get_stats params[:artists].split(',')
+
+    respond_with @stats
   end
 
   protected

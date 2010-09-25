@@ -1,0 +1,16 @@
+YUI().use('node', 'event', function(Y) {
+  var stats = Y.Node.create("<pre><%= escape_javascript @stats %></pre>");
+
+  Y.one('#statistics').on('click', function(e) {
+    jQuery("<pre><%= escape_javascript @stats %></pre>").dialog({
+      height: '500px',
+      width: '500px',
+      draggable: false,
+      modal: true,
+      resizable: false
+    });
+    e.preventDefault();
+  });
+
+  Y.one('#button').removeAttribute('style');
+});
