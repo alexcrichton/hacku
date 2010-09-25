@@ -1,10 +1,9 @@
 class CreateSimilarities < ActiveRecord::Migration
   def self.up
     create_table :similarities do |t|
-      t.int, :parent_id
-      t.string, :name
-      t.string, :related_artist
-      t.int :value
+      t.integer :artist_id
+      t.string :related_artist
+      t.float  :score
 
       t.timestamps
     end
