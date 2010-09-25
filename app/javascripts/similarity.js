@@ -219,7 +219,7 @@ function createShapes() {
     material.getParam('texSampler0').value = sampler;
     samplers.push(sampler);
 
-    o3djs.io.loadTexture(g_pack, images[artists[tt]], funFactory(tt));
+    o3djs.io.loadTexture(g_pack, images[tt], funFactory(tt));
     shapes.push(sphere);
   }
 }
