@@ -17,14 +17,18 @@ var g_o3d;
 var g_math;
 var g_pack;
 var g_viewInfo;
-var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2;
+var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2, g_eyeRadius = 8;
 var samplers = [], transforms = [], shapes = [];
 var locs = [];
 var vels = [];
+var hiding = [];
 var similar;
 var x = 1000;
 var images, artists;
 var mouseX, mouseY, mouseDown;
+var userArtists;
+
+var centerColor = 'http://www.papermarc.com.au/images/met-sd_jupiter_red-lg.jpg';
 
 /**
  * Creates the client area.
@@ -35,20 +39,58 @@ function initClient(hash) {
   artists           = hash.artists;
 
   for (var i = 0; i < artists.length; i++) {
-    vels.push([0, 0, 0]);
+    vels.push([Math.random() * 5, Math.random() * 5, Math.random() * 5]);
 
     var vec = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
     var mag = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 
-     locs.push([vec[0] / mag, vec[1] / mag, vec[2] / mag]);
+    locs.push([vec[0] / mag, vec[1] / mag, vec[2] / mag]);
+    hiding.push(false);
   }
 
   window.g_finished = false;  // for selenium testing.
   o3djs.webgl.makeClients(main);
 }
 
+function hideUser(user) {
+  var uartists = userArtists[user];
+
+  for (var i = 0; i < uartists.length; i++) {
+    for (var j = 0; j < artists.length; j++) {
+      if (artists[j] == uartists[i]) {
+        hiding[j] = true;
+        transforms[j].localMatrix = g_math.matrix4.translation([1000, 1000, 1000]);
+      }
+    }
+  }
+}
+
+function showUser(user) {
+  var uartists = userArtists[user];
+
+  for (var i = 0; i < uartists.length; i++) {
+    for (var j = 0; j < artists.length; j++) {
+      if (artists[j] == uartists[i]) {
+        hiding[j] = false;
+      }
+    }
+  }
+}
+
+function setUserArtists(hash) {
+  userArtists = hash;
+}
+
 function setUpCameraDragging() {
   YUI().use('node', function(Y) {
+    Y.one('#o3d').on('mousewheel', function(e) {
+      g_eyeRadius *= 1 - e.wheelDelta * 0.05;
+
+      g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
+          eyePosition(),   // eye
+          [0, 0, 0],    // target
+          [-1, 0, 0]);  // up
+    });
     Y.one('#o3d').on('mousedown', function(e) {
       mouseDown = true;
     });
@@ -95,15 +137,15 @@ function process(x, y) {
 
     var info = shapes[i].elements[0].boundingBox.intersectRay(vec1tmp, vec2tmp);
 
-    if (info.valid && info.intersected) {
+    if (info.valid && info.intersected && !hiding[i]) {
       jQuery('#artists').append(' ' + artists[i]);
-      console.log(artists[i]);
+	  jQuery('#artists').append('<br>');
     }
   }
 }
 
 function eyePosition() {
-  var r = 8;
+  var r = g_eyeRadius;
   var x = r * Math.cos(g_eyeTheta) * Math.sin(g_eyePhi);
   var y = r * Math.sin(g_eyeTheta) * Math.sin(g_eyePhi);
   var z = r * Math.cos(g_eyePhi);
@@ -147,7 +189,7 @@ function initGlobals(clientElements) {
       g_pack,
       g_client.root,
       g_client.renderGraphRoot,
-	  [1,1,1,0]);
+    [1,1,1,0]);
   g_client.normalizeClearColorAlpha = false;
 }
 
@@ -181,6 +223,7 @@ function createShapes() {
   cubeEffect.loadVertexShaderFromString(vertexShaderString);
   cubeEffect.loadPixelShaderFromString(pixelShaderString);
 
+
   var funFactory = function(n) {
     return function(texture, exception) {
       if (exception) {
@@ -198,12 +241,6 @@ function createShapes() {
 
     cubeEffect.createUniformParameters(material);
 
-    // var sphere = o3djs.primitives.createSphere(
-    //     g_pack,
-    //     material,
-    //     5.0,   // Radius of the sphere.
-    //     20,    // Number of meridians.
-    //     30);   // Number of parallels.
     var sphere = o3djs.primitives.createCube(
         g_pack,
         material, // A green phong-shaded material.
@@ -224,10 +261,21 @@ function createShapes() {
     o3djs.io.loadTexture(g_pack, images[tt], funFactory(tt));
     shapes.push(sphere);
   }
+
+  var center = o3djs.primitives.createSphere(
+	g_pack,
+	o3djs.material.createBasicMaterial(g_pack, g_viewInfo, [1,0,0,1]),
+	.05,
+	20,
+	30);
+  var centerSphere = g_pack.createObject('Transform');
+  centerSphere.addShape(center);
+  centerSphere.parent = g_client.root;
+  
 }
 
 function move(){
-  var t = .005;
+  var t = .05;
   var accels = [];
   var i, j, accel, posDiff, offsetDiff, force, forceVec, len;
   for(i = 0; i < transforms.length; i++){
@@ -252,6 +300,7 @@ function move(){
   for (i = 0; i < transforms.length; i++) {
     for (var j = 0; j < 3; j++) {
       vels[i][j] += accels[i][j] * t;
+    vels[i][j] *= .6;
       locs[i][j] += vels[i][j] * t;
     }
     len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+
@@ -261,12 +310,13 @@ function move(){
   }
 
   for(i = 0; i < transforms.length; i++){
-    transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
+    if (!hiding[i]) {
+      transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
+    }
   }
 
-  if(x>0) x -= 1;
+  //if(x>0) x -= .0001;
   // console.log(x);
-
 }
 
 function debug_array(arr){

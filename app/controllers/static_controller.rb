@@ -5,7 +5,4 @@ class StaticController < ApplicationController
   def graph
   end
 
-  def sample
-  end
-
 end

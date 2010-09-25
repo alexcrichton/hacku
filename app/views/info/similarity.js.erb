@@ -16,6 +16,15 @@ YUI().use('anim', 'node', function(Y){
     a.get('node').remove();
 
     initClient(<%= raw @output %>);
+    setUserArtists(<%= raw @hash.to_json %>);
+
+    Y.all('input[type=checkbox]').on('click', function(e) {
+      if(e.target.get('checked')) {
+        showUser(e.target.getAttribute('data-uid'));
+      } else {
+        hideUser(e.target.getAttribute('data-uid'));
+      }
+    });
   });
 
   a.run();

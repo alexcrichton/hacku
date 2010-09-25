@@ -3,6 +3,21 @@ jQuery(function() {
   var textboxlist = new jQuery.TextboxList('#friends_input', {plugins: {autocomplete: {onlyFromValues: true}},unique:true});
   var autocomplete = textboxlist.plugins['autocomplete'];
   autocomplete.setValues(<%= raw @friends.to_json %>);
+  <% if !params[:selected_ids].blank? %>
+    <% params[:selected_ids].split(',').each do |id| %>
+      <% if user = @friends.detect{ |a| a[0] == id } %>
+        textboxlist.add(
+          <%= raw user[1].to_json %>,
+          <%= raw id.to_json %>
+        );
+      <% end %>
+    <% end %>
+  <% elsif user = @friends.detect{ |a| a[0] == current_fbuid } %>
+    textboxlist.add(
+      <%= raw user[1].to_json %>,
+      <%= raw current_fbuid.to_json %>
+    );
+  <% end %>
 
   YUI().use('node', function(Y) {
     Y.one("#load_image").remove();
