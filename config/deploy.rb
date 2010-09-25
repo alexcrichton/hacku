@@ -28,7 +28,8 @@ namespace :db do
 
   desc "Make symlink for database yaml"
   task :symlink do
-    run "ln -nsf #{shared_path}/config/database.yml #{release_path}/config/"
+    run "ln -nsf #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+    run "ln -nsf #{shared_path}/config/production.sqlite3 #{release_path}/db/production.sqlite3"
     run "ln -nsf #{shared_path}/config/facebook.rb #{release_path}/config/initializers"
     run "ln -nsf #{shared_path}/bundle #{latest_release}/.bundle"
   end

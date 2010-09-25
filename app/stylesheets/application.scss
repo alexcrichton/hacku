@@ -55,18 +55,43 @@ html {
   }
 }
 
-#info {
-  float: right;
-  border: 1px solid black;
-  padding: 20px;
-  height: 200px;
-  width: 300px;
-
+.side {
   ul {
     list-style: none;
   }
+  h1 {
+    margin: 0;
+    padding: 0;
+  }
+  float: right;
+  border: 1px solid black;
+  padding: 10px;
+  height: 200px;
+  width: 300px;
 }
 
 #o3d {
   float: left;
+}
+
+#back_form input[type=submit] {
+  display: block;
+  margin: 0 auto;
+  width: 60px;
+  height: 40px;
+
+  margin-top: 80px;
+
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  padding: 0 8px;
+  border: 1px solid #999;
+
+  @include border-radius(2px);
+  @include linear-gradient(color-stops(#fff, #ddd));
+  @include scale(5);
+
+  &:active {
+    @include linear-gradient(color-stops(#ccc, #ddd));
+  }
 }
