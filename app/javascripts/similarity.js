@@ -15,7 +15,7 @@ var g_o3d;
 var g_math;
 var g_pack;
 var g_viewInfo;
-var g_eyePosition = [6, 8, 28];
+var g_eyePosition = [1.5, 2, 7];
 var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
 var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg';
 var samplers = [], transforms = [];
@@ -154,33 +154,6 @@ function createShapes() {
   });
 }
 
-//
-//     var transform = g_pack.createObject('Transform');
-//     transform.addShape(cube);
-//     transform.translate(tt == 0 ? [1, 1, 0] : [0, 1, 1]);
-//     // transforms.push(transform);
-//     transform.parent = g_client.root;
-//
-//     // var sampler = g_pack.createObject('Sampler');
-//     // material.getParam('texSampler0').value = sampler;
-//     // samplers.push(sampler);
-//   }
-//
-//   // o3djs.io.loadTexture(g_pack, g_imgURL, function(texture, exception) {
-//   //   if (exception) {
-//   //     alert(exception);
-//   //   } else {
-//   //     samplers[0].texture = texture;
-//   //     setTimeout(100, function() {
-//   //       o3djs.camera.fitContextToScene(g_client.root,
-//   //                                      g_client.width,
-//   //                                      g_client.height,
-//   //                                      g_viewInfo.drawContext);
-//   //     });
-//   //   }
-//   // });
-// }
-
 function move() {
   var t = 0.040; // 40 ms
   var x = 10;   // sprint constant
@@ -212,8 +185,7 @@ function move() {
     }
   }
 
-  for (i = 0; i < transforms.length; i++)
+  for (i = 0; i < transforms.length; i++) {
     transforms[i].translate(vels[i][0] * t, vels[i][1] * t, vels[i][2] * t);
-  // gc_transform.translate(svel[0] * t, svel[1] * t, svel[2] * t);
-  // gs_transform.translate(cvel[0] * t, cvel[1] * t, cvel[2] * t);
+  }
 }
