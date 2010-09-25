@@ -1,6 +1,6 @@
 @import "blueprint/typography";
 @import "compass/css3";
-/*
+
 body {
   @include blueprint-typography-body(12px);
 }
@@ -53,7 +53,7 @@ html {
     }
   }
 }
-*/
+
 #info {
   height: 710px;
   float: right;
