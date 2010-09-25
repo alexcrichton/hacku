@@ -2,7 +2,7 @@ YUI().use('anim', 'node', function(Y){
   Y.one('body').append("<%= escape_javascript render('canvas') %>");
   Y.one('#o3d').setStyles({
     width: '98%',
-    height: '500px'
+    height: (jQuery(window).height() * 0.95) + 'px'
   });
 
   var a = new Y.Anim({
@@ -13,8 +13,9 @@ YUI().use('anim', 'node', function(Y){
   });
   a.on('end', function() {
     a.get('node').remove();
-  });
-  a.run();
 
-  initClient(<%= raw @output %>);
+    initClient(<%= raw @output %>);
+  });
+
+  a.run();
 });

@@ -1,4 +1,5 @@
 //= require <o3d>
+//= require <yui>
 
 o3djs.base.o3d = o3d;
 o3djs.require('o3djs.webgl');
@@ -17,7 +18,7 @@ var g_o3d;
 var g_math;
 var g_pack;
 var g_viewInfo;
-var g_eyePosition = [3, 4, 14];
+var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2;
 var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
 var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg';
 var g_imgURL3 = 'http://www.teamdc.org/images/frisbee.png'
@@ -62,7 +63,46 @@ function main(clientElements) {
   createShapes();
 
   window.g_finished = true;  // for selenium testing.
+  setUpCameraDragging();
   setInterval(move, 80);
+}
+
+var mouseX, mouseY, mouseDown;
+
+function setUpCameraDragging() {
+  YUI().use('node', function(Y) {
+    Y.one('#o3d').on('mousedown', function(e) {
+      mouseDown = true;
+    });
+    Y.one('#o3d').on('mouseup', function(e) {
+      mouseDown = false;
+    });
+    Y.one('#o3d').on('mousemove', function(e) {
+      if (mouseDown) {
+        var dx = e.clientX - mouseX;
+        var dy = e.clientY - mouseY;
+
+        g_eyeTheta = (g_eyeTheta + dy * 0.01) % (2 * Math.PI);
+        g_eyePhi = (g_eyePhi + dx * 0.01) % (2 * Math.PI);
+
+        g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
+            eyePosition(),   // eye
+            [0, 0, 0],    // target
+            [-1, 0, 0]);  // up
+      }
+
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+  });
+}
+
+function eyePosition() {
+  var r = 13;
+  var x = r * Math.cos(g_eyeTheta) * Math.sin(g_eyePhi);
+  var y = r * Math.sin(g_eyeTheta) * Math.sin(g_eyePhi);
+  var z = r * Math.cos(g_eyePhi);
+  return [x, y, z];
 }
 
 /**
@@ -98,7 +138,7 @@ function initContext() {
   // Set up our view transformation to look towards the world origin where the
   // primitives are located.
   g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
-      g_eyePosition,   // eye
+      eyePosition(),   // eye
       [0, 0, 0],    // target
       [-1, 0, 0]);  // up
 }
@@ -158,13 +198,13 @@ function createShapes() {
     } else {
       samplers[1].texture = texture;
     }
-	  });
+    });
   o3djs.io.loadTexture(g_pack, g_imgURL3, function(texture, exception) {
-	if (exception) {
-	  alert(exception);
-	} else {
-	  samplers[2].texture = texture;
-	}
+  if (exception) {
+    alert(exception);
+  } else {
+    samplers[2].texture = texture;
+  }
   });
 }
 
@@ -233,53 +273,51 @@ function move() {
 */
 
 function move(){
-	var t = .05;
-	var k = 1000; //spring constant
-	var accels = [];
-	var i, j, k, accel, posDiff, offsetDiff, force, forceVec, len;
-	for(i = 0; i < transforms.length; i++){
-		accel = [0, 0, 0];
-		for(j = 0; j < transforms.length; j++){
-			if(i == j) continue;
-			posDiff = [0, 0, 0];
-			for(k = 0; k < 3; k++){
-				posDiff[k] = locs[i][k] - locs[j][k];
-			}
-			offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
-			offsetDiff = offset - (2 - similar[i][j]*1.95);
-			force = (-1) * offset * k / 4;
-			forceVec = [force*posDiff[0]/offsetDiff,force*posDiff[1]/offsetDiff,force*posDiff[2]/offsetDiff];
-			accel[0] += forceVec[0];
-			accel[1] += forceVec[1];
-			accel[2] += forceVec[2];
-		}
-		accels.push(accel);
-	}
+  var t = .05;
+  var k = 1000; //spring constant
+  var accels = [];
+  var i, j, k, accel, posDiff, offsetDiff, force, forceVec, len;
+  for(i = 0; i < transforms.length; i++){
+    accel = [0, 0, 0];
+    for(j = 0; j < transforms.length; j++){
+      if(i == j) continue;
+      posDiff = [0, 0, 0];
+      for(k = 0; k < 3; k++){
+        posDiff[k] = locs[i][k] - locs[j][k];
+      }
+      offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
+      offsetDiff = offset - (2 - similar[i][j]*1.95);
+      force = (-1) * offset * k / 4;
+      forceVec = [force*posDiff[0]/offsetDiff,force*posDiff[1]/offsetDiff,force*posDiff[2]/offsetDiff];
+      accel[0] += forceVec[0];
+      accel[1] += forceVec[1];
+      accel[2] += forceVec[2];
+    }
+    accels.push(accel);
+  }
 
-	debug_array(locs);
+  for (i = 0; i < transforms.length; i++) {
+    for (var j = 0; j < 3; j++) {
+      vels[i][j] += accels[i][j] * t;
+      locs[i][j] += vels[i][j] * t;
+    }
+    len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+
+                 locs[i][2]*locs[i][2]));
+    locs[i] = [ locs[i][0] / len , locs[i][1] / len , locs[i][2] / len ];
+  }
 
-	for (i = 0; i < transforms.length; i++) { 
-		for (var j = 0; j < 3; j++) {
-			vels[i][j] += accels[i][j] * t;
-			locs[i][j] += vels[i][j] * t;
-		}
-		len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+
-								 locs[i][2]*locs[i][2]));
-		locs[i] = [ locs[i][0] / len , locs[i][1] / len , locs[i][2] / len ];
-	}
-   
-	for(i = 0; i < transforms.length; i++){
-		transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
-	}
+  for(i = 0; i < transforms.length; i++){
+    transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
+  }
 }
 
 function debug_array(arr){
-	console.log("start");
-	for(var i = 0; i<arr.length; i++){
-		for(var j = 0; j<arr[0].length;j++){
-			console.log(arr[i][j]);
-		}
-		console.log("mid");
-	}
-	console.log("stop");
+  console.log("start");
+  for(var i = 0; i<arr.length; i++){
+    for(var j = 0; j<arr[0].length;j++){
+      console.log(arr[i][j]);
+    }
+    console.log("mid");
+  }
+  console.log("stop");
 }
