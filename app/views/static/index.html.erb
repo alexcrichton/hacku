@@ -1,8 +1,8 @@
 <% javascript 'rails', 'yui', 'similarity' %>
 
-<h1>Home page</h1>
-
 <div id='form'>
+  <h1>Home page</h1>
+
   <%= form_tag similarity_path, :method => 'put', :remote => true do %>
     <div>
       <%= text_area_tag :q, params[:q], :id => 'artists_q' %>

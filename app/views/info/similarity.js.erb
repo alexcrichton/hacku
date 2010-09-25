@@ -5,9 +5,16 @@ YUI().use('anim', 'node', function(Y){
     height: '500px'
   });
 
-  jQuery('#form, h1').slideUp(function() {
-    jQuery(this).remove();
+  var a = new Y.Anim({
+    node: '#form',
+    to: {height: 0},
+    duration: 0.5,
+    easing: Y.Easing.easeOut
   });
+  a.on('end', function() {
+    a.get('node').remove();
+  });
+  a.run();
 
   initClient(<%= raw @output %>);
 });

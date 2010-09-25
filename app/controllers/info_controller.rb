@@ -15,7 +15,7 @@ class InfoController < ApplicationController
           'b' => 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg'
         },
         :similarities => ['a', 'b', 0.6],
-        :artists => ['a', 'b']
+        :artists      => ['a', 'b']
       }.to_json
     else
       args    = Escape.shell_command @artists

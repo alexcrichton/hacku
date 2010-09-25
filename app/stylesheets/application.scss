@@ -4,3 +4,7 @@
 body {
   @include blueprint-typography-body(12px);
 }
+
+#form {
+  overflow: auto;
+}
