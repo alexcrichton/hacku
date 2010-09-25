@@ -100,10 +100,12 @@ function setUpCameraDragging() {
             [-1, 0, 0]);  // up
       }
 
-      mouseX = e._event.layerX;
-      mouseY = e._event.layerY;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
 
-      process(mouseX, mouseY);
+      if (!mouseDown) {
+        process(e._event.layerX, e._event.layerY);
+      }
     });
   });
 }
