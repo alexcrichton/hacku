@@ -155,7 +155,10 @@ function initGlobals(clientElements) {
   g_viewInfo = o3djs.rendergraph.createBasicView(
       g_pack,
       g_client.root,
-      g_client.renderGraphRoot);
+      g_client.renderGraphRoot,
+	  [1,1,1,0]
+	  );
+  g_client.normalizeClearColorAlpha = false;
 }
 
 /**
@@ -299,7 +302,6 @@ function move(){
   }
 
   if(x>0) x -= .5;
-  console.log(x);
 
 }
 
