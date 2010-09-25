@@ -4,7 +4,8 @@ module FbGetArtists
 
 @@default_token = "2227470867|2.aHoc_MKR0rKcao1Ntnq1mw__.3600.1285380000-745375464|1o56hSrn1_pAebnsIl8pxf6v7xs"
 
-  def get_facebook_artists(users, access_token = @@default_token)
+  def get_facebook_artists(users, access_token = nil)
+    access_token ||= @@default_token
     mapping = {}
 
     users.each do |user|
@@ -18,6 +19,7 @@ module FbGetArtists
 
   def get_facebook_response(user = 'me', access_token = @@default_token)
     url = user +'/music?access_token=' + access_token
+    Rails.logger.debug "Requesting from: #{url}"
     n   = Net::HTTP.new 'graph.facebook.com', 443
     req = Net::HTTP::Get.new(url)
 
@@ -26,7 +28,9 @@ module FbGetArtists
 
     resp = n.request req
 
-    resp.body
+    body = resp.body
+    Rails.logger.debug "Received from facebook: #{body}"
+    body
   end
 
   def pullOutArtists(download_response)

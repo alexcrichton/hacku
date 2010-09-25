@@ -3,6 +3,7 @@ class InfoController < ApplicationController
   include FbGetArtists
 
   respond_to :js
+  before_filter :require_user
 
   def similarity
     @artists = params[:q].split("\n").map{ |s| s.split(',') }.flatten
@@ -26,7 +27,8 @@ class InfoController < ApplicationController
   end
 
   def facebook_artists
-    @artists = get_facebook_artists(params[:users].split(',').map(&:chomp))
+    @artists = get_facebook_artists(params[:users].split(',').map(&:chomp),
+      current_user)
     respond_with @artists
   end
 end

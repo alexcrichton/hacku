@@ -1,5 +1,9 @@
 class SessionsController < ApplicationController
 
+  def redirect
+    redirect_to current_user ? graph_path : new_login_path
+  end
+
   def new
   end
 
@@ -13,14 +17,10 @@ class SessionsController < ApplicationController
           Rails.application.config.fb_secret,
           params[:code])
 
-      @access_token = access_token_hash['access_token']
-
-      @res = MiniFB.get(@access_token, 'me')
-
-      self.current_user = @access_token
+      self.current_user = access_token_hash['access_token']
       flash[:success]   = 'Authentication successful.'
 
-      redirect_to root_path
+      redirect_to graph_path
     end
   rescue RestClient::BadRequest # Thrown on an unsuccessful request
     redirect_to new_login_path

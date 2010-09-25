@@ -3,9 +3,11 @@ HackU::Application.routes.draw do
   get 'login/new' => 'sessions#new', :as => 'new_login'
   get 'logout' => 'sessions#destroy'
 
-  get ':action' => 'static', :action => /sample/
+  get ':action' => 'static', :action => /sample|graph/
   put 'similarity(.:format)' => 'info#similarity'
   put 'facebook_artists(.:format)' => 'info#facebook_artists'
 
-  root :to => 'static#index'
+  get 'graph' => 'static#graph'
+
+  root :to => 'sessions#redirect'
 end
