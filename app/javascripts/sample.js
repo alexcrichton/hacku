@@ -34,11 +34,11 @@ var vels = [
   [0, 0, 0]
 ];
 var similar = [
-  [0,1,1],
+  [0,1,.75],
   [1,0,.25],
-  [1,.25,0]
+  [.75,.25,0]
 ];
-var x = 1000;
+var x = 1000; //spring constant
 
 /**
  * Creates the client area.
@@ -273,10 +273,9 @@ function move() {
 */
 
 function move(){
-  var t = .05;
-  var k = 1000; //spring constant
+  var t = .001;
   var accels = [];
-  var i, j, k, accel, posDiff, offsetDiff, force, forceVec, len;
+  var i, j, accel, posDiff, offsetDiff, force, forceVec, len;
   for(i = 0; i < transforms.length; i++){
     accel = [0, 0, 0];
     for(j = 0; j < transforms.length; j++){
@@ -287,7 +286,7 @@ function move(){
       }
       offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
       offsetDiff = offset - (2 - similar[i][j]*1.95);
-      force = (-1) * offset * k / 4;
+      force = (-1) * offset * x / 4;
       forceVec = [force*posDiff[0]/offsetDiff,force*posDiff[1]/offsetDiff,force*posDiff[2]/offsetDiff];
       accel[0] += forceVec[0];
       accel[1] += forceVec[1];
@@ -309,6 +308,9 @@ function move(){
   for(i = 0; i < transforms.length; i++){
     transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
   }
+
+  if(x>0) x -= 1;
+  console.log(x);
 }
 
 function debug_array(arr){
