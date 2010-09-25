@@ -1,4 +1,5 @@
 //= require <o3d>
+//= require <yui>
 
 o3djs.base.o3d = o3d;
 o3djs.require('o3djs.webgl');
@@ -16,17 +17,9 @@ var g_math;
 var g_pack;
 var g_viewInfo;
 var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2;
-var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
-var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg';
 var samplers = [], transforms = [];
-var locs = [
-  [1, 1, 1],
-  [-1, -1, -1]
-];
-var vels = [
-  [0, 0, 0],
-  [0, 0, 0]
-];
+var locs = [];
+var vels = [];
 var images, similarities, artists;
 var mouseX, mouseY, mouseDown;
 
@@ -37,6 +30,15 @@ function initClient(hash) {
   images            = hash.images;
   similarities      = hash.similarities;
   artists           = hash.artists;
+
+  for (var i = 0; i < artists.length; i++) {
+    vels.push([0, 0, 0]);
+
+    var vec = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
+    var mag = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+
+    locs.push([vec[0] / mag, vec[1] / mag, vec[2] / mag]);
+  }
 
   window.g_finished = false;  // for selenium testing.
   o3djs.webgl.makeClients(main);
