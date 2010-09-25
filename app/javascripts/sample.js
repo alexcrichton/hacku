@@ -234,21 +234,21 @@ function move() {
 
 function move(){
 	var t = .05;
-	var oldLocs = [[0,0,0],[0,0,0],[0,0,0]];
 	var k = 1000; //spring constant
 	var accels = [];
-	for(var i = 0; i < transforms.length; i++){
-		var accel = [0, 0, 0];
-		for(var j = 0; j < transforms.length; j++){
+	var i, j, k, accel, posDiff, offsetDiff, force, forceVec, len;
+	for(i = 0; i < transforms.length; i++){
+		accel = [0, 0, 0];
+		for(j = 0; j < transforms.length; j++){
 			if(i == j) continue;
-			var posDiff = [0, 0, 0];
-			for(var k = 0; k < 3; k++){
+			posDiff = [0, 0, 0];
+			for(k = 0; k < 3; k++){
 				posDiff[k] = locs[i][k] - locs[j][k];
 			}
-			var offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
-			var offsetDiff = offset - (2 - similar[i][j]*1.95);
-			var force = (-1) * offset * k / 4;
-			var forceVec = [force*posDiff[0]/offset,force*posDiff[1]/offset,force*posDiff[2]/offset];
+			offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
+			offsetDiff = offset - (2 - similar[i][j]*1.95);
+			force = (-1) * offset * k / 4;
+			forceVec = [force*posDiff[0]/offset,force*posDiff[1]/offset,force*posDiff[2]/offset];
 			accel[0] += forceVec[0];
 			accel[1] += forceVec[1];
 			accel[2] += forceVec[2];
@@ -256,23 +256,29 @@ function move(){
 		accels.push(accel);
 	}
 
+	debug_array(locs);
 
+	oldLocs = locs.slice();
 	
-
-	function m(oldLocs){
-		for (var i = 0; i < transforms.length; i++) {
-			console.log(vels);
-			for (var j = 0; j < 3; j++) {
-				vels[i][j] += accels[i][j] * t;
-				locs[i][j] += vels[i][j] * t;
-			}
-			console.log(vels);
-			var len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+locs[i][2]*locs[i][2]));
-			locs[i] = [ locs[i][0] / len , locs[i][1] / len , locs[i][2] / len ];
+	for (i = 0; i < transforms.length; i++) { 
+		for (var j = 0; j < 3; j++) {
+			vels[i][j] += accels[i][j] * t;
+			locs[i][j] += vels[i][j] * t;
 		}
-		
-		for (var i = 0; i < transforms.length; i++) transforms[i].translate(oldLocs[i][0] - locs[i][0], oldLocs[i][1] - locs[i][1], oldLocs[i][2] - locs[i][2]);
-	} 
-	m(locs);
+		len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+locs[i][2]*locs[i][2]));
+		locs[i] = [ locs[i][0] / len , locs[i][1] / len , locs[i][2] / len ];
+	}
 	
+	for (var i = 0; i < transforms.length; i++) transforms[i].translate(oldLocs[i][0] - locs[i][0], oldLocs[i][1] - locs[i][1], oldLocs[i][2] - locs[i][2]);
+}
+
+function debug_array(arr){
+	console.log("start");
+	for(var i = 0; i<arr.length; i++){
+		for(var j = 0; j<arr[0].length;j++){
+			console.log(arr[i][j]);
+		}
+		console.log("mid");
+	}
+	console.log("stop");
 }
