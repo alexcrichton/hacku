@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
 
   def get_facebook_cookie
     value   = cookies["fbs_#{Rails.application.config.fb_app_id}"]
-    return nil if value.blank?
+    return {} if value.blank?
     value   = value[1..-2]
     hash    = {}
     CGI.parse(value).each_pair{ |k, v| hash[k] = v[0] }
