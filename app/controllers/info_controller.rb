@@ -10,7 +10,7 @@ class InfoController < ApplicationController
   def similarity
 
     @ids = params['friends_input'].split(",")
-    @ids << get_facebook_cookie['uid']
+    # @ids << get_facebook_cookie['uid']
 
     @hash = get_facebook_artists @ids, current_user
 
@@ -26,7 +26,6 @@ class InfoController < ApplicationController
         :artists      => ['a', 'b']
       }.to_json
     else
-      # @artists = ['Lady Gaga', 'Ke$ha']
       @output = get_similarities @artists
     end
 
@@ -35,7 +34,9 @@ class InfoController < ApplicationController
 
   def grabfriends
     @friends = Rails.cache.fetch(get_facebook_cookie['uid'] + '_friends') do
-      get_facebook_friends(get_facebook_cookie['uid'], current_user)
+      me     = MiniFB.get current_user, 'me'
+      me_arr = [current_fbuid, me['first_name'] + ' ' + me['last_name']]
+      get_facebook_friends(current_fbuid, current_user) + [me_arr]
     end
   end
 
