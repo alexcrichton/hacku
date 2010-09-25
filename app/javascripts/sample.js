@@ -30,8 +30,8 @@ var locs = [
   [1, 0, 0],
   [0, 1, 0],
   [0, 0, 1],
-  [1.4,1.4,0],
-  [0,1.4,1.4]
+  [0, 1, 0],
+  [1, 0, 0]
 ];
 var vels = [
   [0, 0, 0],
@@ -41,11 +41,11 @@ var vels = [
   [0, 0, 0]
 ];
 var similar = [
-   [0, 1, 0, 0, .5],
-   [1, 0, 0, 0, .5],
-   [0, 0, 0, 1, .5],
-   [0, 0, 1, 0, .5],
-   [.5, .5, .5, .5, 0]
+   [0, .49, .52, .21, .37],
+   [.49, 0, .80, .73, .21],
+   [.52, .80, 0, .17, .26],
+   [.21, .73, .17, 0, .68],
+   [.37, .21, .26, .68, 0]
 ];
 var x = 1000; //spring constant
 
@@ -132,7 +132,7 @@ function process(x, y) {
 }
 
 function eyePosition() {
-  var r = 13;
+  var r = 8;
   var x = r * Math.cos(g_eyeTheta) * Math.sin(g_eyePhi);
   var y = r * Math.sin(g_eyeTheta) * Math.sin(g_eyePhi);
   var z = r * Math.cos(g_eyePhi);
@@ -263,7 +263,7 @@ function createShapes() {
 }
 
 function move(){
-  var t = .001;
+  var t = .005;
   var accels = [];
   var i, j, accel, posDiff, offsetDiff, force, forceVec, len;
   for(i = 0; i < transforms.length; i++){
@@ -277,7 +277,8 @@ function move(){
       offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
       offsetDiff = offset - (2 - similar[i][j]*1.95);
       force = (-1) * offsetDiff * x / 2;
-      forceVec = [force*posDiff[0]/offset,force*posDiff[1]/offset,force*posDiff[2]/offset];
+      if(offset!=0) forceVec = [force*posDiff[0]/offset,force*posDiff[1]/offset,force*posDiff[2]/offset];
+	  else forceVec = [0,0,0];
       accel[0] += forceVec[0];
       accel[1] += forceVec[1];
       accel[2] += forceVec[2];
