@@ -97,7 +97,6 @@ function process(x, y) {
 
     if (info.valid && info.intersected) {
       jQuery('#artists').append(' ' + artists[i]);
-      console.log(artists[i]);
     }
   }
 }
@@ -147,7 +146,7 @@ function initGlobals(clientElements) {
       g_pack,
       g_client.root,
       g_client.renderGraphRoot,
-	  [1,1,1,0]);
+    [1,1,1,0]);
   g_client.normalizeClearColorAlpha = false;
 }
 
@@ -265,8 +264,6 @@ function move(){
   }
 
   if(x>0) x -= 1;
-  // console.log(x);
-
 }
 
 function debug_array(arr){
