@@ -55,6 +55,13 @@ html {
   }
 }
 
+#info {
+  height: 610px;
+  float: right;
+  overflow: auto;
+  width: 340px;
+}
+
 .side {
   ul {
     list-style: none;

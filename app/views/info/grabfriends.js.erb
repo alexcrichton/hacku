@@ -3,7 +3,7 @@ jQuery(function() {
   var textboxlist = new jQuery.TextboxList('#friends_input', {plugins: {autocomplete: {onlyFromValues: true}},unique:true});
   var autocomplete = textboxlist.plugins['autocomplete'];
   autocomplete.setValues(<%= raw @friends.to_json %>);
-  <% if params[:selected_ids] %>
+  <% if !params[:selected_ids].blank? %>
     <% params[:selected_ids].split(',').each do |id| %>
       <% if user = @friends.detect{ |a| a[0] == id } %>
         textboxlist.add(
