@@ -19,7 +19,8 @@ class InfoController < ApplicationController
         :artists => ['a', 'b']
       }.to_json
     else
-      @output = get_similarities(@artists).to_json
+      args    = Escape.shell_command @artists
+      @output = `#{Rails.root.join('script', 'yqlfetch.pl')} #{args}`
     end
 
     respond_with @output
