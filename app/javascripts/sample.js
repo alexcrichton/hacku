@@ -246,7 +246,7 @@ function move(){
   }
 
   if(x>0) x -= 1;
-  console.log(x);
+
 }
 
 function debug_array(arr){
