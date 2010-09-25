@@ -25,7 +25,7 @@ var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_7
 var g_imgURL3 = 'http://sphotos.ak.fbcdn.net/photos-ak-snc1/v681/208/58/1428210723/n1428210723_30139529_9667.jpg';
 var g_imgURL4 = 'http://hphotos-snc3.fbcdn.net/hs202.snc3/20945_253078189364_541249364_4399403_3781294_n.jpg';
 var g_imgURL5 = 'http://sphotos.ak.fbcdn.net/photos-ak-sf2p/v126/163/37/1363230355/n1363230355_30196483_1039.jpg';
-var samplers = [], transforms = [];
+var samplers = [], transforms = [], shapes = [];
 var locs = [
   [1, 0, 0],
   [0, 1, 0],
@@ -73,7 +73,7 @@ function main(clientElements) {
 
   window.g_finished = true;  // for selenium testing.
   setUpCameraDragging();
-  setInterval(move, 80);
+  // setInterval(move, 80);
 }
 
 var mouseX, mouseY, mouseDown;
@@ -102,8 +102,33 @@ function setUpCameraDragging() {
 
       mouseX = e.clientX;
       mouseY = e.clientY;
+
+      if (!mouseDown) {
+        process(e._event.layerX, e._event.layerY);
+      }
     });
   });
+}
+
+function process(x, y) {
+  var ray = o3djs.picking.clientPositionToWorldRay(x, y, g_viewInfo.drawContext, 600, 600);
+
+  var vec1 = ray.far, vec2 = ray.near;
+  // console.log(x, y);
+
+  for (var i = 0; i < shapes.length; i++) {
+    // var info = shapes[i].elements[0].drawElements[0].intersectRay(0, transforms[i].cull, ray.far, ray.near);
+
+    var vec1tmp = g_math.subVector(vec1, locs[i]);
+    var vec2tmp = g_math.subVector(vec2, locs[i]);
+    var info = shapes[i].elements[0].boundingBox.intersectRay(vec1tmp, vec2tmp);
+    if (info.valid && info.intersected) {
+      console.log(i);
+    }
+    // console.log(info.intersected);
+    // console.log(info.primitiveIndex);
+    // console.log(info);
+  }
 }
 
 function eyePosition() {
@@ -192,6 +217,8 @@ function createShapes() {
     sampler.maxAnisotropy = 4;
     material.getParam('texSampler0').value = sampler;
     samplers.push(sampler);
+
+    shapes.push(sphere);
   }
 
   o3djs.io.loadTexture(g_pack, g_imgURL, function(texture, exception) {
@@ -217,9 +244,9 @@ function createShapes() {
   });
   o3djs.io.loadTexture(g_pack, g_imgURL4, function(texture, exception) {
   if (exception) {
-	alert(exception);
+  alert(exception);
   } else {
-	samplers[3].texture = texture;
+  samplers[3].texture = texture;
   }
   });
   o3djs.io.loadTexture(g_pack, g_imgURL5, function(texture, exception) {
@@ -229,7 +256,6 @@ function createShapes() {
     samplers[4].texture = texture;
   }
   });
-
 
 }
 
@@ -264,8 +290,8 @@ function move(){
     }
     len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+
                  locs[i][2]*locs[i][2]));
-	if(len != 0) locs[i] = [ locs[i][0] / len , locs[i][1] / len , 
-							 locs[i][2] / len ];
+  if(len != 0) locs[i] = [ locs[i][0] / len , locs[i][1] / len ,
+               locs[i][2] / len ];
   }
 
   for(i = 0; i < transforms.length; i++){
