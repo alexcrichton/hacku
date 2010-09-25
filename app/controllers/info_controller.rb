@@ -7,8 +7,15 @@ class InfoController < ApplicationController
   before_filter :require_user
 
   def similarity
-    @artists = params[:q].split("\n").map{ |s| s.split(',') }.flatten
-    @artists.map!(&:chomp)
+    
+    @ids = params['friends_input'].split(",")
+    @ids << get_facebook_cookie['uid']
+
+    @hash = get_facebook_artists @ids, current_user
+    
+    @artists = @hash.values.flatten.uniq
+
+    p @artists
 
     if true
       @output = {
