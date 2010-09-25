@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   end
 
   def new
-    if get_facebook_cookie
+    if get_facebook_cookie['access_token']
       self.current_user = get_facebook_cookie['access_token']
       redirect_to graph_path
     end
