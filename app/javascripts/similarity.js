@@ -37,6 +37,7 @@ function initClient(hash) {
   images            = hash.images;
   similarities      = hash.similarities;
   artists           = hash.artists;
+
   window.g_finished = false;  // for selenium testing.
   o3djs.webgl.makeClients(main);
 }
@@ -146,6 +147,16 @@ function createShapes() {
   cubeEffect.loadVertexShaderFromString(vertexShaderString);
   cubeEffect.loadPixelShaderFromString(pixelShaderString);
 
+  var funFactory = function(n) {
+    return function(texture, exception) {
+      if (exception) {
+        alert(exception);
+      } else {
+        samplers[n].texture = texture;
+      }
+    }
+  };
+
   for (var tt = 0; tt < 2; ++tt) {
     var material      = g_pack.createObject('Material');
     material.drawList = g_viewInfo.performanceDrawList;
@@ -175,22 +186,9 @@ function createShapes() {
     sampler.maxAnisotropy = 4;
     material.getParam('texSampler0').value = sampler;
     samplers.push(sampler);
-  }
 
-  o3djs.io.loadTexture(g_pack, g_imgURL, function(texture, exception) {
-    if (exception) {
-      alert(exception);
-    } else {
-      samplers[0].texture = texture;
-    }
-  });
-  o3djs.io.loadTexture(g_pack, g_imgURL2, function(texture, exception) {
-    if (exception) {
-      alert(exception);
-    } else {
-      samplers[1].texture = texture;
-    }
-  });
+    o3djs.io.loadTexture(g_pack, images[artists[tt]], funFactory(tt));
+  }
 }
 
 function move() {
