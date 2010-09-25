@@ -1,10 +1,9 @@
 <% javascript 'rails', 'yui', 'similarity', 'choosefriends' %>
 
 <div id="load_image">
-	<%= image_tag 'load.gif', :id=>'loading'  %>
-
-<div id="wrapper">
-	<input id="friends_input" type="text" />
+  <%= image_tag 'ajax-loader.gif', :id => 'loading'  %>
 </div>
 
+<div id="wrapper" style="display:none">
+  <input id="friends_input" type="text" />
 </div>
