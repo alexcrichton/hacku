@@ -51,7 +51,7 @@
   <h1>Friends Shown</h1>
   <ul>
     <% @ids.each_with_index do |id, index| %>
-      <li><%= check_box_tag 'u' + id %> <%= @friends[index] %></li>
+      <li><%= check_box_tag 'u' + id, true, '', :'data-uid' => id %> <%= @friends[index] %></li>
     <% end %>
   </ul>
 </div>

@@ -70,7 +70,6 @@ function showUser(user) {
     for (var j = 0; j < artists.length; j++) {
       if (artists[j] == uartists[i]) {
         hiding[j] = false;
-        transforms[j].localMatrix = g_math.matrix4.translation([1000, 1000, 1000]);
       }
     }
   }
