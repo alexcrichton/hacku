@@ -2,7 +2,6 @@ class InfoController < ApplicationController
 
   include FbGetArtists
   include FbGetFriends
-  include FetchAndCache
 
   respond_to :js
   before_filter :require_user
@@ -26,12 +25,8 @@ class InfoController < ApplicationController
         :artists      => ['a', 'b']
       }.to_json
     else
-      #args    = Escape.shell_command @artists
-      #@output = `#{Rails.root.join('script', 'yqlfetch.pl')} #{args}`
-      for artist in @artists
- 	p fetch(artist)
-      end
-   end
+      @output = get_similarities @artists
+    end
 
     respond_with @output
   end

@@ -10,10 +10,10 @@ use constant DEFAULT_IMG => "http://www.mfu.ac.th/school/liberalarts/pics/unknow
 
 my $multival_mode = 0;
 if ($#ARGV > 0) {
-    $multival_mode = 1; 
+    $multival_mode = 1;
 }
 elsif ($#ARGV < 0) {
-    die "yqlfetch.pl called without arguments.\n"; 
+    die "yqlfetch.pl called without arguments.\n";
 }
 
 my $yql = WebService::YQL->new(env => 'http://datatables.org/alltables.env');
@@ -39,25 +39,25 @@ print decode_utf8($images);
 print decode_utf8($artists);
 print decode_utf8($match);
 print decode_utf8($foot);
-     
+
 # modify JSON output to include data for all artists
 sub oneval
 {
     # pick up an image for artist1
     my $artist1 = $ARGV[0];
     my $image1 = get_image_for_artist($artist1);
-    
+
     # these strings compose our final JSON output
-    $images .= "  \'" . $artist1 . " => \'" . $image1 . "\'\n";
+    $images .= "  \'" . $artist1 . " => \'" . $image1 . "\',\n";
     $artists .= "  \'" . $artist1 . "\'";
-    
+
     my @sim_data = get_artist_sim_array($artist1);
     for my $sim_artist (@sim_data) {
-	$images .= "    \'" . $sim_artist->{'name'} . "\' => \'";
-	$images .= get_best_img('size', @{ $sim_artist->{'image'}}) . "\',\n";
-	$artists .= ", \'" . $sim_artist->{'name'} . "\'";
-	$match .= "    [\'" . $artist1 . "\', \'" . $sim_artist->{'name'};
-	$match .= "\', \'" . $sim_artist->{'match'} . "\'],\n";
+  $images .= "    \'" . $sim_artist->{'name'} . "\' => \'";
+  $images .= get_best_img('size', @{ $sim_artist->{'image'}}) . "\',\n";
+  $artists .= ", \'" . $sim_artist->{'name'} . "\'";
+  $match .= "    [\'" . $artist1 . "\', \'" . $sim_artist->{'name'};
+  $match .= "\', \'" . $sim_artist->{'match'} . "\'],\n";
     }
 }
 
@@ -68,20 +68,20 @@ sub multival
     my %artists = ();
 
     for my $key (@artist_keys) {
-	$artists{$key} = get_image_for_artist($key);
+  $artists{$key} = get_image_for_artist($key);
     }
 
     for my $artist (keys %artists) {
-	$images .= "    \'" . $artist . "\' => \'" . $artists{$artist} . "\',\n";
-	$artists .= "\'" . $artist . "\', ";
+  $images .= "    \'" . $artist . "\' => \'" . $artists{$artist} . "\',\n";
+  $artists .= "\'" . $artist . "\', ";
 
-	my @sim_data = get_artist_sim_array($artist);
-	for my $sim_artist (@sim_data) {
-	    if (exists ($artists{$sim_artist->{'name'}})) {
-		$match .= "    [\'" . $artist . "\', \'" . $sim_artist->{'name'};
-		$match .= "\', \'" . $sim_artist->{'match'} . "\'],\n";
-	    }
-	}
+  my @sim_data = get_artist_sim_array($artist);
+  for my $sim_artist (@sim_data) {
+      if (exists ($artists{$sim_artist->{'name'}})) {
+    $match .= "    [\'" . $artist . "\', \'" . $sim_artist->{'name'};
+    $match .= "\', \'" . $sim_artist->{'match'} . "\'],\n";
+      }
+  }
     }
 }
 
@@ -94,13 +94,13 @@ sub get_best_img
     my $curr_img = DEFAULT_IMG;
     my $curr_rank = 10;
     for my $img (@_) {
-        if (exists($rankings{ $img->{$sizename} }) 
-	    && $rankings{$img->{$sizename}} < $curr_rank
-	    && exists($img->{'content'}) ) {
+        if (exists($rankings{ $img->{$sizename} })
+      && $rankings{$img->{$sizename}} < $curr_rank
+      && exists($img->{'content'}) ) {
             $curr_img = $img->{'content'};
-	    $curr_rank = $rankings{$img->{$sizename}};
-	    last if ($curr_rank == 0);
-	}
+      $curr_rank = $rankings{$img->{$sizename}};
+      last if ($curr_rank == 0);
+  }
     }
     return $curr_img;
 }
