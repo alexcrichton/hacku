@@ -9,4 +9,6 @@ HackU::Application.routes.draw do
   get 'graph' => 'static#graph'
 
   root :to => 'sessions#redirect'
+
+  get 'grabfriends(.:format)' => 'info#grabfriends'
 end

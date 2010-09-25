@@ -1,23 +1,10 @@
-<% javascript 'rails', 'yui', 'similarity' %>
+<% javascript 'rails', 'yui', 'similarity', 'choosefriends' %>
 
-<div id='form'>
-  <h1>Home page</h1>
+<div id="load_image">
+	<%= image_tag 'load.gif', :id=>'loading'  %>
 
-  <%= form_tag similarity_path, :method => 'put', :remote => true do %>
-    <div>
-      <%= text_area_tag :q, params[:q], :id => 'artists_q' %>
-      <%= submit_tag 'Get Similarity', :disable_with => 'Fetching...' %>
-    </div>
-  <% end %>
-
-  <%= form_tag facebook_artists_path, :method => 'put', :remote => true, :id => 'facebook' do %>
-    <div>
-      <%= text_area_tag :users %>
-      <%= submit_tag 'Get From Facebook', :disable_with => 'Fetching...' %>
-    </div>
-  <% end %>
+<div id="wrapper">
+	<input id="friends_input" type="text" />
 </div>
 
-<% if current_user.blank? %>
-  <%= link_to 'Login', fb_login_url %>
-<% end %>
+</div>

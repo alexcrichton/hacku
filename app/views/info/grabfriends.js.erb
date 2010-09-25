@@ -1,0 +1,10 @@
+jQuery(function() {
+	
+	YUI().use('node', function(Y) {
+		Y.one("#loading").remove();
+	});
+
+	var textboxlist = new jQuery.TextboxList('#friends_input', {plugins: {autocomplete: {onlyFromValues: true}}});
+	var autocomplete = textboxlist.plugins['autocomplete'];
+	autocomplete.setValues(<%= raw @friends.to_json %>);
+});

@@ -1,6 +1,7 @@
 class InfoController < ApplicationController
 
   include FbGetArtists
+  include FbGetFriends
 
   respond_to :js
   before_filter :require_user
@@ -31,4 +32,12 @@ class InfoController < ApplicationController
       current_user)
     respond_with @artists
   end
+
+  def grabfriends
+   
+   p get_facebook_cookie
+   
+   @friends = get_facebook_friends(get_facebook_cookie["uid"], current_user); 
+  end
+
 end

@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<script src="http://yui.yahooapis.com/3.1.0/build/yui/yui-min.js"></script>
+</head>
+
+<body>
+
+<script type="text/javascript">
+YUI({
+    //Last Gallery Build of this module
+        gallery: 'gallery-2010.08.18-17-12',
+	    modules: {
+	            'gallery-aui-skin-base': {
+		                fullpath: 'http://yui.yahooapis.com/gallery-2010.08.18-17-12/build/gallery-aui-skin-base/css/gallery-aui-skin-base-min.css',
+				            type: 'css'
+					            },
+						            'gallery-aui-skin-classic': {
+							                fullpath: 'http://yui.yahooapis.com/gallery-2010.08.18-17-12/build/gallery-aui-skin-classic/css/gallery-aui-skin-classic-min.css',
+									            type: 'css',
+										                requires: ['gallery-aui-skin-base']
+												        }
+													    }
+													    }).use('gallery-aui-textboxlist', function(Y) {
+													    		// This is just some data to prepare, but can be any valid datasource
+																	var states = [
+																			        ['AL', 'Alabama', 'The Heart of Dixie'],
+																						        ['AK', 'Alaska', 'The Land of the Midnight Sun'],
+																									        ['AZ', 'Arizona', 'The Grand Canyon State'],
+																												        ['AR', 'Arkansas', 'The Natural State'],
+																															        ['CA', 'California', 'The Golden State'],
+																																		        ['CO', 'Colorado', 'The Mountain State'],
+																																					        ['CT', 'Connecticut', 'The Constitution State'],
+																																								        ['DE', 'Delaware', 'The First State'],
+																																											        ['DC', 'District of Columbia', "The Nation's Capital"],
+																																														        ['FL', 'Florida', 'The Sunshine State'],
+																																																	        ['GA', 'Georgia', 'The Peach State'],
+																																																				        ['HI', 'Hawaii', 'The Aloha State'],
+																																																							        ['ID', 'Idaho', 'Famous Potatoes'],
+																																																										        ['IL', 'Illinois', 'The Prairie State'],
+																																																													        ['IN', 'Indiana', 'The Hospitality State'],
+																																																																        ['IA', 'Iowa', 'The Corn State'],
+																																																																			        ['KS', 'Kansas', 'The Sunflower State'],
+																																																																								['KY', 'Kentucky', 'The Bluegrass State']
+																																																																										    ];
+																																																																										     
+																																																																										     		var textBoxList = new Y.TextboxList(
+																																																																															{
+																																																																																			dataSource: states,
+																																																																																							schema: {
+																																																																																												resultFields: ['key', 'name', 'description']
+																																																																																																},
+																																																																																																				matchKey: 'name',
+																																																																																																								typeAhead: true,
+																																																																																																												width: 600
+																																																																																																															}
+																																																																																																																	).render();
+																																																																																																																	});</script>
+</body>
+
+
+</html>
