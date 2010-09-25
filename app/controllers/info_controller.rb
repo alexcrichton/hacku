@@ -9,7 +9,7 @@ class InfoController < ApplicationController
     @artists = params[:q].split("\n").map{ |s| s.split(',') }.flatten
     @artists.map!(&:chomp)
 
-    if false
+    if true
       @output = {
         :images => {
           'a' => 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg',
