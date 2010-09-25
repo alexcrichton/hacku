@@ -8,3 +8,8 @@ body {
 #form {
   overflow: auto;
 }
+
+html {
+  @include linear-gradient(color-stops(darken(#b5cdcf, 10%), white));
+  background-repeat: repeat-x;
+}

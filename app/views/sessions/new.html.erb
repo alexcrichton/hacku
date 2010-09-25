@@ -1,1 +1,19 @@
-<%= link_to 'Login', fb_login_url %>
+<% css 'login' %>
+
+<div id='login_link'>
+  <fb:login-button></fb:login-button>
+</div>
+
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({appId: '133075676730741', status: true, cookie: true,
+             xfbml: true});
+  };
+  (function() {
+    var e = document.createElement('script'); e.async = true;
+    e.src = document.location.protocol +
+      '//connect.facebook.net/en_US/all.js';
+    document.getElementById('fb-root').appendChild(e);
+  }());
+</script>
