@@ -17,7 +17,7 @@ var g_o3d;
 var g_math;
 var g_pack;
 var g_viewInfo;
-var g_eyePosition = [6, 8, 28];
+var g_eyePosition = [3, 4, 14];
 var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
 var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg';
 var g_imgURL3 = 'http://www.teamdc.org/images/frisbee.png'
@@ -33,8 +33,8 @@ var vels = [
   [0, 0, 0]
 ];
 var similar = [
-  [0,.5,1],
-  [.5,0,.25],
+  [0,1,1],
+  [1,0,.25],
   [1,.25,0]
 ];
 var x = 1000;
@@ -130,7 +130,7 @@ function createShapes() {
     var sphere = o3djs.primitives.createCube(
         g_pack,
         material, // A green phong-shaded material.
-        1);                  // The length of each side of the cube.
+        .5);                  // The length of each side of the cube.
 
     var transform = g_pack.createObject('Transform');
     transform.addShape(sphere);
@@ -248,7 +248,7 @@ function move(){
 			offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
 			offsetDiff = offset - (2 - similar[i][j]*1.95);
 			force = (-1) * offset * k / 4;
-			forceVec = [force*posDiff[0]/offset,force*posDiff[1]/offset,force*posDiff[2]/offset];
+			forceVec = [force*posDiff[0]/offsetDiff,force*posDiff[1]/offsetDiff,force*posDiff[2]/offsetDiff];
 			accel[0] += forceVec[0];
 			accel[1] += forceVec[1];
 			accel[2] += forceVec[2];
@@ -258,18 +258,19 @@ function move(){
 
 	debug_array(locs);
 
-	oldLocs = locs.slice();
-	
 	for (i = 0; i < transforms.length; i++) { 
 		for (var j = 0; j < 3; j++) {
 			vels[i][j] += accels[i][j] * t;
 			locs[i][j] += vels[i][j] * t;
 		}
-		len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+locs[i][2]*locs[i][2]));
+		len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+
+								 locs[i][2]*locs[i][2]));
 		locs[i] = [ locs[i][0] / len , locs[i][1] / len , locs[i][2] / len ];
 	}
-	
-	for (var i = 0; i < transforms.length; i++) transforms[i].translate(oldLocs[i][0] - locs[i][0], oldLocs[i][1] - locs[i][1], oldLocs[i][2] - locs[i][2]);
+   
+	for(i = 0; i < transforms.length; i++){
+		transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
+	}
 }
 
 function debug_array(arr){
