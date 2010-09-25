@@ -4,10 +4,11 @@
   <%= image_tag 'ajax-loader.gif', :id => 'loading'  %>
 </div>
 
-<div id="wrapper" style="display:none">
+<div id="wrapper" style="opacity:0">
   <%= form_tag similarity_path, :remote => true do %>
     <div>
       <%= text_field_tag 'friends_input', params[:q], :id => 'friends_input' %>
       <%= submit_tag 'Submit' %>
+    </div>
   <% end %>
 </div>

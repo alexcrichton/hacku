@@ -1,12 +1,12 @@
 jQuery(function() {
-	
-	var textboxlist = new jQuery.TextboxList('#friends_input', {plugins: {autocomplete: {onlyFromValues: true}}});
-	var autocomplete = textboxlist.plugins['autocomplete'];
-	autocomplete.setValues(<%= raw @friends.to_json %>);
 
-	YUI().use('node', function(Y) {
-		Y.one("#load_image").remove();
-		Y.one('#wrapper').setStyle('display', null)
-	});
+  var textboxlist = new jQuery.TextboxList('#friends_input', {plugins: {autocomplete: {onlyFromValues: true}}});
+  var autocomplete = textboxlist.plugins['autocomplete'];
+  autocomplete.setValues(<%= raw @friends.to_json %>);
+
+  YUI().use('node', function(Y) {
+    Y.one("#load_image").remove();
+    Y.one('#wrapper').removeAttribute('style');
+  });
 
 });
