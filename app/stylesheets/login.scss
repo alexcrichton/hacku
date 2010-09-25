@@ -10,7 +10,9 @@
 
   margin-top: 300px;
 
-  span {
-    @include scale(10, 10);
+  a {
+    span {
+      @include scale(10, 10);
+    }
   }
 }
