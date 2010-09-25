@@ -35,7 +35,7 @@ function initClient(hash) {
   artists           = hash.artists;
 
   for (var i = 0; i < artists.length; i++) {
-	  vels.push([Math.random() * 5, Math.random() * 5, Math.random() * 5]);
+	  vels.push([Math.random() * 5, Math.random() * 5, Math.random() * 5]cd);
 
     var vec = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
     var mag = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
