@@ -26,10 +26,11 @@ class ApplicationController < ActionController::Base
     return {} if value.blank?
     value   = value[1..-2]
     hash    = {}
-    CGI.parse(value).each_pair{ |k, v| hash[k] = v[0] }
     payload = ''
-    hash.each_pair do |k, v|
-      payload += [k, v].join('=') if k != 'sig'
+    value.split('&').each do |seg|
+      k, v = seg.split '='
+      hash[k] = v
+      payload += seg if k != 'sig'
     end
 
     digest = Digest::MD5.hexdigest(payload + Rails.application.config.fb_secret)
