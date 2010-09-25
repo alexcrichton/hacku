@@ -28,6 +28,8 @@ var images, artists;
 var mouseX, mouseY, mouseDown;
 var userArtists;
 
+var centerColor = 'http://www.papermarc.com.au/images/met-sd_jupiter_red-lg.jpg';
+
 /**
  * Creates the client area.
  */
@@ -221,6 +223,7 @@ function createShapes() {
   cubeEffect.loadVertexShaderFromString(vertexShaderString);
   cubeEffect.loadPixelShaderFromString(pixelShaderString);
 
+
   var funFactory = function(n) {
     return function(texture, exception) {
       if (exception) {
@@ -238,12 +241,6 @@ function createShapes() {
 
     cubeEffect.createUniformParameters(material);
 
-    // var sphere = o3djs.primitives.createSphere(
-    //     g_pack,
-    //     material,
-    //     5.0,   // Radius of the sphere.
-    //     20,    // Number of meridians.
-    //     30);   // Number of parallels.
     var sphere = o3djs.primitives.createCube(
         g_pack,
         material, // A green phong-shaded material.
@@ -264,6 +261,17 @@ function createShapes() {
     o3djs.io.loadTexture(g_pack, images[tt], funFactory(tt));
     shapes.push(sphere);
   }
+
+  var center = o3djs.primitives.createSphere(
+	g_pack,
+	o3djs.material.createBasicMaterial(g_pack, g_viewInfo, [1,0,0,1]),
+	.05,
+	20,
+	30);
+  var centerSphere = g_pack.createObject('Transform');
+  centerSphere.addShape(center);
+  centerSphere.parent = g_client.root;
+  
 }
 
 function move(){
