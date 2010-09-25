@@ -42,6 +42,7 @@ module HackU
     config.to_prepare do
       load 'fb_get_artists.rb'
       load 'fb_get_friends.rb'
+      load 'fetch_and_cache.rb'
     end
   end
 end

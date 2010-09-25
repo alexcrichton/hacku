@@ -2,6 +2,7 @@ class InfoController < ApplicationController
 
   include FbGetArtists
   include FbGetFriends
+  include FetchAndCache
 
   respond_to :js
   before_filter :require_user
@@ -15,7 +16,7 @@ class InfoController < ApplicationController
 
     @artists = @hash.values.flatten.uniq
 
-    if true
+    if false
       @output = {
         :images => {
           'a' => 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg',
@@ -25,9 +26,12 @@ class InfoController < ApplicationController
         :artists      => ['a', 'b']
       }.to_json
     else
-      args    = Escape.shell_command @artists
-      @output = `#{Rails.root.join('script', 'yqlfetch.pl')} #{args}`
-    end
+      #args    = Escape.shell_command @artists
+      #@output = `#{Rails.root.join('script', 'yqlfetch.pl')} #{args}`
+      for artist in @artists
+ 	p fetch(artist)
+      end
+   end
 
     respond_with @output
   end

@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  parent_id: 
+  name: 
+  related_artist: 
+  value: 
+
+two:
+  parent_id: 
+  name: 
+  related_artist: 
+  value: 
