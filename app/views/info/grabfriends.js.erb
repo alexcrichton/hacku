@@ -1,6 +1,6 @@
 jQuery(function() {
 
-  var textboxlist = new jQuery.TextboxList('#friends_input', {plugins: {autocomplete: {onlyFromValues: true}}});
+  var textboxlist = new jQuery.TextboxList('#friends_input', {plugins: {autocomplete: {onlyFromValues: true}},unique:true});
   var autocomplete = textboxlist.plugins['autocomplete'];
   autocomplete.setValues(<%= raw @friends.to_json %>);
 
