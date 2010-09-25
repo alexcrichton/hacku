@@ -20,12 +20,15 @@ var g_viewInfo;
 var g_eyePosition = [6, 8, 28];
 var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
 var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg';
+var g_imgURL3 = 'http://www.facebook.com/home.php?#!/photo.php?pid=35018828&fbid=614382335759&op=1&o=global&view=global&subj=1428210723&id=4802970'
 var samplers = [], transforms = [];
 var locs = [
   [1, 1, 1],
-  [-1, -1, -1]
+  [-1, -1, -1],
+  [2, 2, 2]
 ];
 var vels = [
+  [0, 0, 0],
   [0, 0, 0],
   [0, 0, 0]
 ];
@@ -105,7 +108,7 @@ function createShapes() {
   cubeEffect.loadVertexShaderFromString(vertexShaderString);
   cubeEffect.loadPixelShaderFromString(pixelShaderString);
 
-  for (var tt = 0; tt < 2; ++tt) {
+  for (var tt = 0; tt < 3; ++tt) {
     var material      = g_pack.createObject('Material');
     material.drawList = g_viewInfo.performanceDrawList;
     material.effect   = cubeEffect;
@@ -149,6 +152,13 @@ function createShapes() {
     } else {
       samplers[1].texture = texture;
     }
+	  });
+  o3djs.io.loadTexture(g_pack, g_imgURL3, function(texture, exception) {
+	if (exception) {
+	  alert(exception);
+	} else {
+	  samplers[2].texture = texture;
+	}
   });
 }
 
@@ -181,7 +191,7 @@ function createShapes() {
 
 function move() {
   var t = 0.010; // 40 ms
-  var x = 1000;   // sprint constant
+  var x = 1000;   // spring constant
   var i, j, k;
   var accels = [];
 
