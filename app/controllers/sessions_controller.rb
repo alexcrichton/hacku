@@ -5,10 +5,6 @@ class SessionsController < ApplicationController
   end
 
   def new
-    if get_facebook_cookie['access_token']
-      self.current_user = get_facebook_cookie['access_token']
-      redirect_to graph_path
-    end
   end
 
   def create
@@ -27,11 +23,6 @@ class SessionsController < ApplicationController
       redirect_to graph_path
     end
   rescue RestClient::BadRequest # Thrown on an unsuccessful request
-    redirect_to new_login_path
-  end
-
-  def destroy
-    self.current_user = nil
     redirect_to new_login_path
   end
 

@@ -5,12 +5,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user
 
   def current_user
-    return @current_user if defined?(@current_user)
-    @current_user = session[:fb_uid]
-  end
-
-  def current_user= fb_uid
-    session[:fb_uid] = fb_uid
+    get_facebook_cookie['access_token']
   end
 
   def require_user
