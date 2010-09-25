@@ -1,7 +1,7 @@
 <% css 'login' %>
 
 <div id='login_link'>
-  <fb:login-button></fb:login-button>
+  <fb:login-button onlogin="facebook_onlogin();"></fb:login-button>
 </div>
 
 <div id="fb-root"></div>
@@ -16,4 +16,9 @@
       '//connect.facebook.net/en_US/all.js';
     document.getElementById('fb-root').appendChild(e);
   }());
+</script>
+<script>
+  function facebook_onlogin(){
+    document.location.href = "<%= graph_url %>";
+  }
 </script>

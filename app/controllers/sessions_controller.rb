@@ -51,7 +51,7 @@ class SessionsController < ApplicationController
     digest = Digest::MD5.hexdigest(payload + Rails.application.config.fb_secret)
 
     if digest == hash['sig'][0]
-      hash['access_token']
+      hash['access_token'][0]
     else
       nil
     end

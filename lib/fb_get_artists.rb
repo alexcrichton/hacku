@@ -2,7 +2,7 @@ require 'net/https'
 
 module FbGetArtists
 
-@@default_token = "2227470867|2.aHoc_MKR0rKcao1Ntnq1mw__.3600.1285380000-745375464|1o56hSrn1_pAebnsIl8pxf6v7xs"
+  @@default_token = "2227470867|2.aHoc_MKR0rKcao1Ntnq1mw__.3600.1285380000-745375464|1o56hSrn1_pAebnsIl8pxf6v7xs"
 
   def get_facebook_artists(users, access_token = nil)
     access_token ||= @@default_token
