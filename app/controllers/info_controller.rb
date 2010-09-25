@@ -34,10 +34,7 @@ class InfoController < ApplicationController
   end
 
   def grabfriends
-   
-   p get_facebook_cookie
-   
-   @friends = get_facebook_friends(get_facebook_cookie["uid"], current_user); 
+    @friends = get_facebook_friends(get_facebook_cookie['uid'], current_user)
   end
 
 end
