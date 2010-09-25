@@ -9,10 +9,10 @@ module FbGetFriends
   private
 
   def get_friends_response user, access_token
-    url = user +'/friends?access_token=' + access_token
+    url = user + '/friends?access_token=' + access_token
     Rails.logger.debug "Requesting from: #{url}"
     n   = Net::HTTP.new 'graph.facebook.com', 443
-    req = Net::HTTP::Get.new(url)
+    req = Net::HTTP::Get.new url
 
     n.use_ssl     = true
     n.verify_mode = OpenSSL::SSL::VERIFY_NONE
