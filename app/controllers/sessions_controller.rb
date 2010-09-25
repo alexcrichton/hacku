@@ -38,7 +38,9 @@ class SessionsController < ApplicationController
   protected
 
   def get_facebook_cookie
-    value   = cookies["fbs_#{Rails.application.config.fb_app_id}"][1..-2]
+    value   = cookies["fbs_#{Rails.application.config.fb_app_id}"]
+    return nil if value.blank?
+    value   = value[1..-2]
     hash    = CGI.parse value
     payload = ''
     hash.each_pair do |k, v|
