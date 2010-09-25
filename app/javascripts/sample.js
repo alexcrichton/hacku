@@ -73,7 +73,7 @@ function main(clientElements) {
 
   window.g_finished = true;  // for selenium testing.
   setUpCameraDragging();
-  // setInterval(move, 80);
+  setInterval(move, 80);
 }
 
 var mouseX, mouseY, mouseDown;

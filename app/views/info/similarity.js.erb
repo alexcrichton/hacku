@@ -1,8 +1,9 @@
 YUI().use('anim', 'node', function(Y){
   Y.one('body').append("<%= escape_javascript render('canvas') %>");
+  var side = (jQuery(window).height() * 0.95) + 'px';
   Y.one('#o3d').setStyles({
-    width: '98%',
-    height: (jQuery(window).height() * 0.95) + 'px'
+    width: side,
+    height: side
   });
 
   var a = new Y.Anim({
