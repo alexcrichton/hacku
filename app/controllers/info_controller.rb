@@ -2,6 +2,7 @@ class InfoController < ApplicationController
 
   include FbGetArtists
   include FbGetFriends
+  include Similarities
 
   respond_to :js
   before_filter :require_user
@@ -25,6 +26,7 @@ class InfoController < ApplicationController
         :artists      => ['a', 'b']
       }.to_json
     else
+      @artists = ['Lady Gaga', 'Ke$ha']
       @output = get_similarities @artists
     end
 

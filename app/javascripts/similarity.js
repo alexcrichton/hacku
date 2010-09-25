@@ -21,12 +21,9 @@ var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2;
 var samplers = [], transforms = [], shapes = [];
 var locs = [];
 var vels = [];
-var similar = [
-[0,1],
-[1,0]
-];
+var similar;
 var x = 1000;
-var images, similarities, artists;
+var images, artists;
 var mouseX, mouseY, mouseDown;
 
 /**
@@ -34,7 +31,7 @@ var mouseX, mouseY, mouseDown;
  */
 function initClient(hash) {
   images            = hash.images;
-  similarities      = hash.similarities;
+  similar           = hash.similarities;
   artists           = hash.artists;
 
   for (var i = 0; i < artists.length; i++) {
