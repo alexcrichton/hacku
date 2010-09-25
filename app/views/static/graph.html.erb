@@ -9,7 +9,7 @@
     <div>
       <%= label_tag 'friends_input', 'Facebook friends to compare:' %>
       <%= text_field_tag 'friends_input', params[:q], :id => 'friends_input' %>
-      <%= submit_tag 'Submit' %>
+      <%= submit_tag 'Submit', :disable_with => 'Submitting' %>
     </div>
   <% end %>
 </div>

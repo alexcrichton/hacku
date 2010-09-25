@@ -7,15 +7,13 @@ class InfoController < ApplicationController
   before_filter :require_user
 
   def similarity
-    
+
     @ids = params['friends_input'].split(",")
     @ids << get_facebook_cookie['uid']
 
     @hash = get_facebook_artists @ids, current_user
-    
-    @artists = @hash.values.flatten.uniq
 
-    p @artists
+    @artists = @hash.values.flatten.uniq
 
     if true
       @output = {
