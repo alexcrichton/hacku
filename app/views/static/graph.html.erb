@@ -7,9 +7,9 @@
 <div id="wrapper" style="opacity:0">
   <%= form_tag similarity_path, :remote => true, :method => 'put' do %>
     <div>
-      <%= label_tag 'friends_input', 'Facebook friends to compare:' %>
+      <h1>Enter some friend names</h1>
       <%= text_field_tag 'friends_input', params[:q], :id => 'friends_input' %>
-      <%= submit_tag 'Submit', :disable_with => 'Submitting' %>
+      <%= submit_tag 'Make Fancy', :disable_with => 'Submitting' %>
     </div>
   <% end %>
 </div>
