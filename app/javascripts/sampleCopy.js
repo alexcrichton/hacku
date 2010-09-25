@@ -20,24 +20,15 @@ var g_viewInfo;
 var g_eyePosition = [6, 8, 28];
 var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
 var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg';
-var g_imgURL3 = 'http://www.teamdc.org/images/frisbee.png'
 var samplers = [], transforms = [];
 var locs = [
-  [1, 0, 0],
-  [0, 1, 0],
-  [0, 0, 1]
+  [1, 1, 1],
+  [-1, -1, -1]
 ];
 var vels = [
   [0, 0, 0],
-  [0, 0, 0],
   [0, 0, 0]
 ];
-var similar = [
-  [0,.5,1],
-  [.5,0,.25],
-  [1,.25,0]
-];
-var x = 1000;
 
 /**
  * Creates the client area.
@@ -114,7 +105,7 @@ function createShapes() {
   cubeEffect.loadVertexShaderFromString(vertexShaderString);
   cubeEffect.loadPixelShaderFromString(pixelShaderString);
 
-  for (var tt = 0; tt < 3; ++tt) {
+  for (var tt = 0; tt < 2; ++tt) {
     var material      = g_pack.createObject('Material');
     material.drawList = g_viewInfo.performanceDrawList;
     material.effect   = cubeEffect;
@@ -130,7 +121,7 @@ function createShapes() {
     var sphere = o3djs.primitives.createCube(
         g_pack,
         material, // A green phong-shaded material.
-        1);                  // The length of each side of the cube.
+        3);                  // The length of each side of the cube.
 
     var transform = g_pack.createObject('Transform');
     transform.addShape(sphere);
@@ -158,13 +149,6 @@ function createShapes() {
     } else {
       samplers[1].texture = texture;
     }
-	  });
-  o3djs.io.loadTexture(g_pack, g_imgURL3, function(texture, exception) {
-	if (exception) {
-	  alert(exception);
-	} else {
-	  samplers[2].texture = texture;
-	}
   });
 }
 
@@ -195,9 +179,9 @@ function createShapes() {
 //   // });
 // }
 
-/*
 function move() {
-  var t = 0.001; // 4 ms
+  var t = 0.010; // 40 ms
+  var x = 500;   // sprint constant
   var i, j, k;
   var accels = [];
 
@@ -209,15 +193,16 @@ function move() {
       }
     }
 
-   accels.push(accel);
+    accels.push(accel);
   }
 
   // Assume constant acceleration during this time
   for (i = 0; i < transforms.length; i++) {
     for (j = 0; j < 3; j++) {
       vels[i][j] += accels[i][j] * t;
-   }
+    }
   }
+
   // Assume constant velocity
   for (i = 0; i < transforms.length; i++) {
     for (j = 0; j < 3; j++) {
@@ -229,50 +214,4 @@ function move() {
     transforms[i].translate(vels[i][0] * t, vels[i][1] * t, vels[i][2] * t);
   // gc_transform.translate(svel[0] * t, svel[1] * t, svel[2] * t);
   // gs_transform.translate(cvel[0] * t, cvel[1] * t, cvel[2] * t);
-}
-*/
-
-function move(){
-	var t = .05;
-	var oldLocs = [[0,0,0],[0,0,0],[0,0,0]];
-	var k = 1000; //spring constant
-	var accels = [];
-	for(var i = 0; i < transforms.length; i++){
-		var accel = [0, 0, 0];
-		for(var j = 0; j < transforms.length; j++){
-			if(i == j) continue;
-			var posDiff = [0, 0, 0];
-			for(var k = 0; k < 3; k++){
-				posDiff[k] = locs[i][k] - locs[j][k];
-			}
-			var offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
-			var offsetDiff = offset - (2 - similar[i][j]*1.95);
-			var force = (-1) * offset * k / 4;
-			var forceVec = [force*posDiff[0]/offset,force*posDiff[1]/offset,force*posDiff[2]/offset];
-			accel[0] += forceVec[0];
-			accel[1] += forceVec[1];
-			accel[2] += forceVec[2];
-		}
-		accels.push(accel);
-	}
-
-
-	
-
-	function m(oldLocs){
-		for (var i = 0; i < transforms.length; i++) {
-			console.log(vels);
-			for (var j = 0; j < 3; j++) {
-				vels[i][j] += accels[i][j] * t;
-				locs[i][j] += vels[i][j] * t;
-			}
-			console.log(vels);
-			var len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+locs[i][2]*locs[i][2]));
-			locs[i] = [ locs[i][0] / len , locs[i][1] / len , locs[i][2] / len ];
-		}
-		
-		for (var i = 0; i < transforms.length; i++) transforms[i].translate(oldLocs[i][0] - locs[i][0], oldLocs[i][1] - locs[i][1], oldLocs[i][2] - locs[i][2]);
-	} 
-	m(locs);
-	
 }
