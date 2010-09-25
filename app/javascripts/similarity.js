@@ -8,6 +8,7 @@ o3djs.require('o3djs.rendergraph');
 o3djs.require('o3djs.primitives');
 o3djs.require('o3djs.material');
 o3djs.require('o3djs.io');
+o3djs.require('o3djs.picking');
 
 // global variables
 var g_o3dElement;
@@ -17,9 +18,14 @@ var g_math;
 var g_pack;
 var g_viewInfo;
 var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2;
-var samplers = [], transforms = [];
+var samplers = [], transforms = [], shapes = [];
 var locs = [];
 var vels = [];
+var similar = [
+[0,1],
+[1,0]
+];
+var x = 1000;
 var images, similarities, artists;
 var mouseX, mouseY, mouseDown;
 
@@ -68,8 +74,35 @@ function setUpCameraDragging() {
 
       mouseX = e.clientX;
       mouseY = e.clientY;
+
+      if (!mouseDown) {
+        process(e._event.layerX, e._event.layerY);
+      }
     });
   });
+}
+
+function process(x, y) {
+  jQuery('#artists').html('');
+
+  var h = jQuery('canvas').height();
+  var w = jQuery('canvas').width();
+
+  var ray = o3djs.picking.clientPositionToWorldRay(x, y, g_viewInfo.drawContext, w, h);
+
+  var vec1 = ray.far, vec2 = ray.near;
+
+  for (var i = 0; i < shapes.length; i++) {
+    var vec1tmp = g_math.subVector(vec1, locs[i]);
+    var vec2tmp = g_math.subVector(vec2, locs[i]);
+
+    var info = shapes[i].elements[0].boundingBox.intersectRay(vec1tmp, vec2tmp);
+
+    if (info.valid && info.intersected) {
+      jQuery('#artists').append(' ' + artists[i]);
+      console.log(artists[i]);
+    }
+  }
 }
 
 function eyePosition() {
@@ -156,7 +189,7 @@ function createShapes() {
       } else {
         samplers[n].texture = texture;
       }
-    }
+    };
   };
 
   for (var tt = 0; tt < artists.length; tt++) {
@@ -190,41 +223,60 @@ function createShapes() {
     samplers.push(sampler);
 
     o3djs.io.loadTexture(g_pack, images[artists[tt]], funFactory(tt));
+    shapes.push(sphere);
   }
 }
 
-function move() {
-  var t = 0.040; // 40 ms
-  var x = 10;   // sprint constant
-  var i, j, k;
+function move(){
+  var t = .001;
   var accels = [];
-
-  for (i = 0; i < transforms.length; i++) {
-    var accel = [0, 0, 0];
-    for (j = 0; j < transforms.length; j++) {
-      for (k = 0; k < 3; k++) {
-        accel[k] += (locs[j][k] - locs[i][k]) * x;
+  var i, j, accel, posDiff, offsetDiff, force, forceVec, len;
+  for(i = 0; i < transforms.length; i++){
+    accel = [0, 0, 0];
+    for(j = 0; j < transforms.length; j++){
+      if(i == j) continue;
+      posDiff = [0, 0, 0];
+      for(k = 0; k < 3; k++){
+        posDiff[k] = locs[i][k] - locs[j][k];
       }
+      offset = Math.sqrt(Math.abs(posDiff[0]*posDiff[0]+posDiff[1]*posDiff[1]+posDiff[2]*posDiff[2]));
+      offsetDiff = offset - (2 - similar[i][j]*1.95);
+      force = (-1) * offsetDiff * x / 2;
+      forceVec = [force*posDiff[0]/offset,force*posDiff[1]/offset,force*posDiff[2]/offset];
+      accel[0] += forceVec[0];
+      accel[1] += forceVec[1];
+      accel[2] += forceVec[2];
     }
-
     accels.push(accel);
   }
 
-  // Assume constant acceleration during this time
   for (i = 0; i < transforms.length; i++) {
-    for (j = 0; j < 3; j++) {
+    for (var j = 0; j < 3; j++) {
       vels[i][j] += accels[i][j] * t;
-    }
-  }
-
-  // Assume constant velocity
-  for (i = 0; i < transforms.length; i++) {
-    for (j = 0; j < 3; j++) {
       locs[i][j] += vels[i][j] * t;
     }
+    len = Math.sqrt(Math.abs(locs[i][0]*locs[i][0]+locs[i][1]*locs[i][1]+
+                 locs[i][2]*locs[i][2]));
+  if(len != 0) locs[i] = [ locs[i][0] / len , locs[i][1] / len ,
+               locs[i][2] / len ];
   }
 
-  for (i = 0; i < transforms.length; i++) {
-    transforms[i].translate(vels[i][0] * t, vels[i][1] * t, vels[i][2] * t);
+  for(i = 0; i < transforms.length; i++){
+    transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
   }
+
+  if(x>0) x -= 1;
+  // console.log(x);
+
+}
+
+function debug_array(arr){
+  console.log("start");
+  for(var i = 0; i<arr.length; i++){
+    for(var j = 0; j<arr[0].length;j++){
+      console.log(arr[i][j]);
+    }
+    console.log("mid");
+  }
+  console.log("stop");
 }
