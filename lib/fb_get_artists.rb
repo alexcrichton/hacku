@@ -2,13 +2,13 @@ require 'net/https'
 
 module FbGetArtists
 
-@@default_token = "2227470867|2.mUu_AKppyrFnQmg_te2Tug__.3600.1285372800-541249364|zs_OrcCXk2yftNBHvQAUKj9Dl6M"
+@@default_token = "2227470867|2.aHoc_MKR0rKcao1Ntnq1mw__.3600.1285380000-745375464|1o56hSrn1_pAebnsIl8pxf6v7xs"
 
   def get_facebook_artists(users, access_token = @@default_token)
     mapping = {}
 
     users.each do |user|
-      mapping[user] = pullOutArtists get_facebook_response(user), access_token
+      mapping[user] = pullOutArtists get_facebook_response(user, access_token)
     end
 
     mapping
@@ -25,8 +25,9 @@ module FbGetArtists
     n.verify_mode = OpenSSL::SSL::VERIFY_NONE
     resp = n.request req
 
-    resp.body
-
+    body = resp.body
+    puts body
+    body
   end
 
   def pullOutArtists(download_response)

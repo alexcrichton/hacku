@@ -26,6 +26,7 @@ class InfoController < ApplicationController
   end
 
   def facebook_artists
-    respond_with get_facebook_artists(params[:users])
+    @artists = get_facebook_artists(params[:users].split(',').map(&:chomp))
+    respond_with @artists
   end
 end

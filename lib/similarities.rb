@@ -8,7 +8,7 @@ module Similarities
     }
 
     artists.each do |artist|
-      args   = Escape.shell_command artist
+      args   = Escape.shell_command [artist]
       output = `#{Rails.root.join('script', 'yqlfetch.pl')} #{args}`
       hash   = ActiveSupport::JSON.decode output
 

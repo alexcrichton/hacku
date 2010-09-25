@@ -4,7 +4,14 @@
 
 <%= form_tag similarity_path, :method => 'put', :remote => true, :id => 'form' do %>
   <div>
-    <%= text_area_tag :q %>
+    <%= text_area_tag :q, params[:q], :id => 'artists_q' %>
     <%= submit_tag 'Get Similarity', :disable_with => 'Fetching...' %>
+  </div>
+<% end %>
+
+<%= form_tag facebook_artists_path, :method => 'put', :remote => true, :id => 'form' do %>
+  <div>
+    <%= text_area_tag :users %>
+    <%= submit_tag 'Get From Facebook', :disable_with => 'Fetching...' %>
   </div>
 <% end %>

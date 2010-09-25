@@ -1,0 +1,3 @@
+YUI().use('node', function(Y){
+  Y.one('#artists_q').setContent("<%= escape_javascript @artists.values.flatten.join(',') %>");
+});

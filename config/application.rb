@@ -40,8 +40,8 @@ module HackU
     config.filter_parameters += [:password]
 
     config.to_prepare do
-      require 'similarities'
-      require 'fb_get_artists'
+      load 'similarities.rb'
+      load 'fb_get_artists.rb'
     end
   end
 end
