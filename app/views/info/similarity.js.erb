@@ -1,13 +1,20 @@
-Y = YUI().use('anim', 'node', function(Y){
+YUI().use('anim', 'node', function(Y){
   Y.one('body').append("<%= escape_javascript render('canvas') %>");
   Y.one('#o3d').setStyles({
     width: '98%',
     height: '500px'
   });
 
-  jQuery('#form').slideUp(function() {
-    jQuery(this).remove();
+  var a = new Y.Anim({
+    node: '#form',
+    to: {height: 0},
+    duration: 0.5,
+    easing: Y.Easing.easeOut
   });
+  a.on('end', function() {
+    a.get('node').remove();
+  });
+  a.run();
 
   initClient(<%= raw @output %>);
 });

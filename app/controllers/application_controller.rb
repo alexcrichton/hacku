@@ -1,3 +1,23 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
+  layout Proc.new{ |c| c.request.xhr? ? false : 'application' }
+
+  helper_method :current_user
+
+  def current_user
+    return @current_user if defined?(@current_user)
+    @current_user = session[:fb_uid]
+  end
+
+  def current_user= fb_uid
+    session[:fb_uid] = fb_uid
+  end
+
+  def require_user
+    unless current_user
+      flash[:error] = 'Need to be logged in!'
+
+      redirect_to new_login_path
+    end
+  end
 end
