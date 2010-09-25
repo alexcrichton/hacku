@@ -1,6 +1,5 @@
 class InfoController < ApplicationController
 
-  include Similarities
   include FbGetArtists
 
   respond_to :js

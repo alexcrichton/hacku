@@ -123,7 +123,7 @@ function createShapes() {
     var sphere = o3djs.primitives.createCube(
         g_pack,
         material, // A green phong-shaded material.
-        3);                  // The length of each side of the cube.
+        1);                  // The length of each side of the cube.
 
     var transform = g_pack.createObject('Transform');
     transform.addShape(sphere);
@@ -182,8 +182,8 @@ function createShapes() {
 // }
 
 function move() {
-  var t = 0.010; // 40 ms
-  var x = 1000;   // sprint constant
+  var t = 0.040; // 40 ms
+  var x = 10;   // sprint constant
   var i, j, k;
   var accels = [];
 
