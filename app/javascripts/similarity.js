@@ -40,7 +40,7 @@ function initClient(hash) {
     var vec = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
     var mag = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 
-    locs.push([vec[0] / mag, vec[1] / mag, vec[2] / mag]);
+     locs.push([vec[0] / mag, vec[1] / mag, vec[2] / mag]);
   }
 
   window.g_finished = false;  // for selenium testing.
@@ -103,7 +103,7 @@ function process(x, y) {
 }
 
 function eyePosition() {
-  var r = 13;
+  var r = 8;
   var x = r * Math.cos(g_eyeTheta) * Math.sin(g_eyePhi);
   var y = r * Math.sin(g_eyeTheta) * Math.sin(g_eyePhi);
   var z = r * Math.cos(g_eyePhi);
@@ -146,7 +146,9 @@ function initGlobals(clientElements) {
   g_viewInfo = o3djs.rendergraph.createBasicView(
       g_pack,
       g_client.root,
-      g_client.renderGraphRoot);
+      g_client.renderGraphRoot,
+	  [1,1,1,0]);
+  g_client.normalizeClearColorAlpha = false;
 }
 
 /**
@@ -205,7 +207,7 @@ function createShapes() {
     var sphere = o3djs.primitives.createCube(
         g_pack,
         material, // A green phong-shaded material.
-        1);                  // The length of each side of the cube.
+        .25);                  // The length of each side of the cube.
 
     var transform = g_pack.createObject('Transform');
     transform.addShape(sphere);
@@ -225,7 +227,7 @@ function createShapes() {
 }
 
 function move(){
-  var t = .001;
+  var t = .005;
   var accels = [];
   var i, j, accel, posDiff, offsetDiff, force, forceVec, len;
   for(i = 0; i < transforms.length; i++){
