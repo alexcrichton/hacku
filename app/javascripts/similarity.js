@@ -137,6 +137,7 @@ function process(x, y) {
 
     if (info.valid && info.intersected && !hiding[i]) {
       jQuery('#artists').append(' ' + artists[i]);
+	  jQuery('#artists').append('<br>');
     }
   }
 }
