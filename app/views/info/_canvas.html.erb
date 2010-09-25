@@ -41,26 +41,28 @@
 <!-- End of effect -->
 </div>
 
-<div class='side'>
-  <h1>Artists Hovered Over</h1>
-  <div id='artists'>
-  </div>
-</div>
-
-<div class='side'>
-  <h1>Friends Shown</h1>
-  <ul>
-    <% @ids.each_with_index do |id, index| %>
-      <li><%= check_box_tag 'u' + id, true, '', :'data-uid' => id %> <%= @friends[index] %></li>
-    <% end %>
-  </ul>
-</div>
-
-<div class='side'>
-  <%= form_tag graph_path, :method => :get, :id => 'back_form' do %>
-    <div>
-      <%= hidden_field_tag :selected_ids, @ids.join(',') %>
-      <%= submit_tag 'Back', :disable_with => 'Yay.' %>
+<div id='info'>
+  <div class='side'>
+    <h1>Artists Hovered Over</h1>
+    <div id='artists'>
     </div>
-  <% end %>
+  </div>
+
+  <div class='side'>
+    <h1>Friends Shown</h1>
+    <ul>
+      <% @ids.each_with_index do |id, index| %>
+        <li><%= check_box_tag 'u' + id, true, '', :'data-uid' => id %> <%= @friends[index] %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class='side'>
+    <%= form_tag graph_path, :method => :get, :id => 'back_form' do %>
+      <div>
+        <%= hidden_field_tag :selected_ids, @ids.join(',') %>
+        <%= submit_tag 'Back', :disable_with => 'Yay.' %>
+      </div>
+    <% end %>
+  </div>
 </div>
