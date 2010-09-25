@@ -28,8 +28,8 @@ class InfoController < ApplicationController
   end
 
   def grabfriends
-    Rails.cache.fetch(get_facebook_cookie['uid'] + '_friends') do
-      @friends = get_facebook_friends(get_facebook_cookie['uid'], current_user)
+    @friends = Rails.cache.fetch(get_facebook_cookie['uid'] + '_friends') do
+      get_facebook_friends(get_facebook_cookie['uid'], current_user)
     end
   end
 
