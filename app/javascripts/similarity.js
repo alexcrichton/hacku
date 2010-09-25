@@ -157,7 +157,7 @@ function createShapes() {
     }
   };
 
-  for (var tt = 0; tt < 2; ++tt) {
+  for (var tt = 0; tt < artists.length; tt++) {
     var material      = g_pack.createObject('Material');
     material.drawList = g_viewInfo.performanceDrawList;
     material.effect   = cubeEffect;
