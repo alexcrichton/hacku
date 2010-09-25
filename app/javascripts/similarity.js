@@ -135,7 +135,7 @@ function process(x, y) {
 
     var info = shapes[i].elements[0].boundingBox.intersectRay(vec1tmp, vec2tmp);
 
-    if (info.valid && info.intersected) {
+    if (info.valid && info.intersected && !hiding[i]) {
       jQuery('#artists').append(' ' + artists[i]);
     }
   }
