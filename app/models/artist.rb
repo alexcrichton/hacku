@@ -1,6 +1,10 @@
 class Artist < ActiveRecord::Base
 
-  attr_accessible :name, :image
-  has_many :similarities
+  has_many :similarities, :dependent => :destroy
+  accepts_nested_attributes_for :similarities
+
+  validates_presence_of :name, :image
+
+  validates_uniqueness_of :name
 
 end

@@ -7,32 +7,45 @@ module Similarities
   def get_similarities artists
     images       = []
     similarities = []
-    outputs      = artists.each_with_index do |artist, index|
+
+    outputs = artists.map do |artist|
       db = Artist.where(:name => artist).first
 
       if db.nil?
-        db       = Artist.new
         output   = get_yql artist
-        db.image = output[:images][artist]
-        db.name  = artist
-
-        output[:similarities].each do |ignored, related, score|
-          db.similarities << Similarity.new(
+        sim_attr = {}
+        output[:similarities].each_with_index do |arr, i|
+          ignored, related, score = arr
+          sim_attr[i] = {
             :related_artist => related,
             :score          => score.to_f
-          )
+          }
         end
 
-        db.save!
+        db = Artist.new(
+          :image => output[:images][artist],
+          :name  => artist,
+          :similarities_attributes => sim_attr
+        )
+
+        db = nil unless db.save
       end
 
-      images << db.image
+      db
+    end
 
-      db.similarities.each do |similarity|
-        artists.each_with_index do |a, i|
-          if similarity.related_artist == a
-            similarities[i]     ||= Array.new artists.size, 0
-            similarities[index] ||= Array.new artists.size, 0
+    outputs.compact!
+
+    similarities
+
+    outputs.each_with_index do |artist, index|
+      similarities[index] ||= Array.new outputs.size, 0
+      images << artist.image
+
+      artist.similarities.each do |similarity|
+        outputs.each_with_index do |a, i|
+          if similarity.related_artist == a.name
+            similarities[i]     ||= Array.new outputs.size, 0
             similarities[i][index] = similarity.score
             similarities[index][i] = similarity.score
           end
@@ -42,7 +55,7 @@ module Similarities
 
     {
       :images       => images,
-      :artists      => artists,
+      :artists      => outputs.map(&:name),
       :similarities => similarities
     }.to_json
   end
@@ -62,9 +75,11 @@ module Similarities
     body = Net::HTTP.get 'query.yahooapis.com', '/v1/public/yql?' + h.to_query
     response = ActiveSupport::JSON.decode body
 
-    arr = response['query']['results']['lfm']
-
     ret_val = {:images => {}, :similarities => []}
+
+    return ret_val if response['query']['results'].nil?
+
+    arr = response['query']['results']['lfm']
 
     arr.each do |block|
       name  = block['similarartists']['artist']['name']

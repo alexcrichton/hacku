@@ -26,7 +26,7 @@ class InfoController < ApplicationController
         :artists      => ['a', 'b']
       }.to_json
     else
-      @artists = ['Lady Gaga', 'Ke$ha']
+      # @artists = ['Lady Gaga', 'Ke$ha']
       @output = get_similarities @artists
     end
 
