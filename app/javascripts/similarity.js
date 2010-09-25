@@ -17,7 +17,7 @@ var g_o3d;
 var g_math;
 var g_pack;
 var g_viewInfo;
-var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2;
+var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2, g_eyeRadius = 8;
 var samplers = [], transforms = [], shapes = [];
 var locs = [];
 var vels = [];
@@ -49,6 +49,14 @@ function initClient(hash) {
 
 function setUpCameraDragging() {
   YUI().use('node', function(Y) {
+    Y.one('#o3d').on('mousewheel', function(e) {
+      g_eyeRadius *= 1 - e.wheelDelta * 0.05;
+
+      g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
+          eyePosition(),   // eye
+          [0, 0, 0],    // target
+          [-1, 0, 0]);  // up
+    });
     Y.one('#o3d').on('mousedown', function(e) {
       mouseDown = true;
     });
@@ -102,7 +110,7 @@ function process(x, y) {
 }
 
 function eyePosition() {
-  var r = 8;
+  var r = g_eyeRadius;
   var x = r * Math.cos(g_eyeTheta) * Math.sin(g_eyePhi);
   var y = r * Math.sin(g_eyeTheta) * Math.sin(g_eyePhi);
   var z = r * Math.cos(g_eyePhi);
