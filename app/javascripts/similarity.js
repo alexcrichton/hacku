@@ -15,7 +15,7 @@ var g_o3d;
 var g_math;
 var g_pack;
 var g_viewInfo;
-var g_eyePosition = [1.5, 2, 7];
+var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2;
 var g_imgURL = 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg';
 var g_imgURL2 = 'http://profile.ak.fbcdn.net/hprofile-ak-sf2p/hs353.snc4/41677_737168824_5825_s.jpg';
 var samplers = [], transforms = [];
@@ -28,6 +28,7 @@ var vels = [
   [0, 0, 0]
 ];
 var images, similarities, artists;
+var mouseX, mouseY, mouseDown;
 
 /**
  * Creates the client area.
@@ -38,6 +39,42 @@ function initClient(hash) {
   artists           = hash.artists;
   window.g_finished = false;  // for selenium testing.
   o3djs.webgl.makeClients(main);
+}
+
+function setUpCameraDragging() {
+  YUI().use('node', function(Y) {
+    Y.one('#o3d').on('mousedown', function(e) {
+      mouseDown = true;
+    });
+    Y.one('#o3d').on('mouseup', function(e) {
+      mouseDown = false;
+    });
+    Y.one('#o3d').on('mousemove', function(e) {
+      if (mouseDown) {
+        var dx = e.clientX - mouseX;
+        var dy = e.clientY - mouseY;
+
+        g_eyeTheta = (g_eyeTheta + dy * 0.01) % (2 * Math.PI);
+        g_eyePhi = (g_eyePhi + dx * 0.01) % (2 * Math.PI);
+
+        g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
+            eyePosition(),   // eye
+            [0, 0, 0],    // target
+            [-1, 0, 0]);  // up
+      }
+
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+  });
+}
+
+function eyePosition() {
+  var r = 13;
+  var x = r * Math.cos(g_eyeTheta) * Math.sin(g_eyePhi);
+  var y = r * Math.sin(g_eyeTheta) * Math.sin(g_eyePhi);
+  var z = r * Math.cos(g_eyePhi);
+  return [x, y, z];
 }
 
 /**
@@ -56,6 +93,8 @@ function main(clientElements) {
 
   window.g_finished = true;  // for selenium testing.
   setInterval(move, 80);
+
+  setUpCameraDragging();
 }
 
 /**
@@ -91,7 +130,7 @@ function initContext() {
   // Set up our view transformation to look towards the world origin where the
   // primitives are located.
   g_viewInfo.drawContext.view = g_math.matrix4.lookAt(
-      g_eyePosition,   // eye
+      eyePosition(),   // eye
       [0, 0, 0],    // target
       [-1, 0, 0]);  // up
 }
