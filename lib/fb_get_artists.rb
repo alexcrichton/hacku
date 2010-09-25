@@ -17,17 +17,16 @@ module FbGetArtists
   private
 
   def get_facebook_response(user = 'me', access_token = @@default_token)
-
-    url = user +'/music?access_token=' +access_token
-    n = Net::HTTP.new 'graph.facebook.com', 443
+    url = user +'/music?access_token=' + access_token
+    n   = Net::HTTP.new 'graph.facebook.com', 443
     req = Net::HTTP::Get.new(url)
-    n.use_ssl = true
+
+    n.use_ssl     = true
     n.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
     resp = n.request req
 
-    body = resp.body
-    puts body
-    body
+    resp.body
   end
 
   def pullOutArtists(download_response)
