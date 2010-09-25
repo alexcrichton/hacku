@@ -77,7 +77,7 @@ module Similarities
 
     ret_val = {:images => {}, :similarities => []}
 
-    return ret_val if response['query']['results'].nil?
+    return ret_val if response.try(:[], 'query').try(:[], 'results').nil?
 
     arr = response['query']['results']['lfm']
 
