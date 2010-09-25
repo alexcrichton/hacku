@@ -1,0 +1,16 @@
+YUI().use('node', 'anim', function(Y){
+  Y.one('#artists_q').setContent("<%= escape_javascript @artists.values.flatten.join(',') %>");
+
+  <% if @artists.size > 0 %>
+    var a = new Y.Anim({
+      node: '#facebook',
+      to: {height: 0},
+      duration: 0.5,
+      easing: Y.Easing.easeOut
+    });
+    a.on('end', function() {
+      a.get('node').remove();
+    });
+    a.run();
+  <% end %>
+});

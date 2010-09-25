@@ -2,19 +2,14 @@
 
 ## Relevance Database
 
-Given a list of artist names, return a JSON encoded string which represents an array of the form:
+Given an artist name, return a JSON encoded string which represents an array of the form:
 
 <pre>
 {
-  'images' => {
-    'artist1' => 'http://image',
-    'artist2' => 'http://image2',
-    ...
-  },
-  'artists' => ['artist1', 'aritst2', ...],
+  'image' => 'http://image of artist',
   'similarities' => [
-    ['artist1', 'artist2', simliarity1],
-    ['artist1', 'artist3', similarity2],
+    ['artist', 'artist2', simliarity1],
+    ['artists', 'artist3', similarity2],
     ...
   ]
 }
@@ -67,11 +62,20 @@ Then we hit go. The function `move()` will be as follows:
 
 This does things, flesh this out more
 
-## Photo Fetching
+## Artist Fetching
 
-We need a photo for each artist, this is a function which when given a list of yahoo IDs of artists, it will return a list of URLs to the photos of the artists in the same order as provided, JSON encoded.
+People have artists on facebook. This is awesome and we should use this. You enter in a bunch of usernames and you get all of the artists of the users and do fancy stuff with them.
 
-If we use last.fm, it looks like all of the images can come from those queries. We should just throw those in a database as well!
+This needs to be a function which takes a list of facebook usernames and then gives a mapping of username to list of artists listed on facebook:
+
+<pre>
+  function(['alex.crichton', 'kellyhope'])
+    # then yields:
+  {
+    'alex.crichton' => ['goats', 'more goats', 'GHB', ...],
+    'kellyhope'     => ['awful artists 1', 'Fall Out Boy', ...]
+  }
+</pre>
 
 ## Possible Extensions
 

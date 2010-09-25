@@ -5,3 +5,4 @@ tmp/**/*
 public/javascripts
 public/stylesheets
 config/database.yml
+*.swp
