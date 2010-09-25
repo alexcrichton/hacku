@@ -82,6 +82,8 @@ module Similarities
     arr = response['query']['results']['lfm']
 
     arr.each do |block|
+      next if block.try(:[], 'similarartists').try(:[], 'artist').blank?
+
       name  = block['similarartists']['artist']['name']
       score = block['similarartists']['artist']['match'].to_f
       ret_val[:similarities] << [artist, name, score.to_f]
