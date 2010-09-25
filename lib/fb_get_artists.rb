@@ -4,7 +4,19 @@ module FbGetArtists
 
 @@default_token = "2227470867|2.mUu_AKppyrFnQmg_te2Tug__.3600.1285372800-541249364|zs_OrcCXk2yftNBHvQAUKj9Dl6M"
 
-  def download(user='me', access_token = @@default_token)
+  def get_facebook_artists(users, access_token = @@default_token)
+    mapping = {}
+
+    users.each do |user|
+      mapping[user] = pullOutArtists get_facebook_response(user), access_token
+    end
+
+    mapping
+  end
+
+  private
+
+  def get_facebook_response(user = 'me', access_token = @@default_token)
 
     url = user +'/music?access_token=' +access_token
     n = Net::HTTP.new 'graph.facebook.com', 443
@@ -27,16 +39,6 @@ module FbGetArtists
     end
 
     artists
-  end
-
-  def run(users, access_token = @@default_token)
-    mapping = {}
-
-    users.each do |user|
-      mapping[user] = pullOutArtists download user, access_token
-    end
-
-    mapping
   end
 
 end

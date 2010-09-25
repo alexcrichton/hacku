@@ -1,6 +1,7 @@
 class InfoController < ApplicationController
 
   include Similarities
+  include FbGetArtists
 
   respond_to :js
 
@@ -24,4 +25,7 @@ class InfoController < ApplicationController
     respond_with @output
   end
 
+  def facebook_artists
+    respond_with get_facebook_artists(params[:users])
+  end
 end
