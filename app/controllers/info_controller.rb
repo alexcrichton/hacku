@@ -1,12 +1,14 @@
 class InfoController < ApplicationController
 
+  include Similarities
+
   respond_to :js
 
   def similarity
     @artists = params[:q].split("\n").map{ |s| s.split(',') }.flatten
     @artists.map!(&:chomp)
 
-    if true
+    if false
       @output = {
         :images => {
           'a' => 'http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs227.ash2/49223_745375464_9946_q.jpg',
@@ -16,7 +18,7 @@ class InfoController < ApplicationController
         :artists => ['a', 'b']
       }.to_json
     else
-      @output = system 'program here', *@artists
+      @output = get_similarities(@artists).to_json
     end
 
     respond_with @output

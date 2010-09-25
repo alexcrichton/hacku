@@ -9,7 +9,7 @@ Given an artist name, return a JSON encoded string which represents an array of 
   'image' => 'http://image of artist',
   'similarities' => [
     ['artist', 'artist2', simliarity1],
-    ['artist', 'artist3', similarity2],
+    ['artists', 'artist3', similarity2],
     ...
   ]
 }
