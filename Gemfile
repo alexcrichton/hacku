@@ -10,3 +10,8 @@ gem 'compass'
 gem 'paste', :git => 'git://github.com/alexcrichton/paste.git'
 
 gem 'sqlite3-ruby', :require => 'sqlite3'
+
+group :development do
+  gem 'capistrano'
+  gem 'rvm'
+end
