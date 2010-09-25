@@ -57,12 +57,14 @@ html {
 
 #info {
   float: right;
-/*  background: blue;*/
   border: 1px solid black;
   padding: 20px;
   height: 200px;
-/*  height: 200px;*/
-/*  width: 200px;*/
+  width: 300px;
+
+  ul {
+    list-style: none;
+  }
 }
 
 #o3d {

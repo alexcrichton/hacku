@@ -46,3 +46,12 @@
   <div id='artists'>
   </div>
 </div>
+
+<div id='info'>
+  <h1>Friends Shown</h1>
+  <ul>
+    <% @ids.each_with_index do |id, index| %>
+      <li><%= check_box_tag 'u' + id %> <%= @friends[index] %></li>
+    <% end %>
+  </ul>
+</div>

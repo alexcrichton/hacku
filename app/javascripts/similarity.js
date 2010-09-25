@@ -21,10 +21,12 @@ var g_eyePhi = Math.PI / 6, g_eyeTheta = Math.PI / 2, g_eyeRadius = 8;
 var samplers = [], transforms = [], shapes = [];
 var locs = [];
 var vels = [];
+var hiding = [];
 var similar;
 var x = 1000;
 var images, artists;
 var mouseX, mouseY, mouseDown;
+var userArtists;
 
 /**
  * Creates the client area.
@@ -40,11 +42,42 @@ function initClient(hash) {
     var vec = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
     var mag = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 
-     locs.push([vec[0] / mag, vec[1] / mag, vec[2] / mag]);
+    locs.push([vec[0] / mag, vec[1] / mag, vec[2] / mag]);
+    hiding.push(false);
   }
 
   window.g_finished = false;  // for selenium testing.
   o3djs.webgl.makeClients(main);
+}
+
+function hideUser(user) {
+  var uartists = userArtists[user];
+
+  for (var i = 0; i < uartists.length; i++) {
+    for (var j = 0; j < artists.length; j++) {
+      if (artists[j] == uartists[i]) {
+        hiding[j] = true;
+        transforms[j].localMatrix = g_math.matrix4.translation([1000, 1000, 1000]);
+      }
+    }
+  }
+}
+
+function showUser(user) {
+  var uartists = userArtists[user];
+
+  for (var i = 0; i < uartists.length; i++) {
+    for (var j = 0; j < artists.length; j++) {
+      if (artists[j] == uartists[i]) {
+        hiding[j] = false;
+        transforms[j].localMatrix = g_math.matrix4.translation([1000, 1000, 1000]);
+      }
+    }
+  }
+}
+
+function setUserArtists(hash) {
+  userArtists = hash;
 }
 
 function setUpCameraDragging() {
@@ -268,7 +301,9 @@ function move(){
   }
 
   for(i = 0; i < transforms.length; i++){
-    transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
+    if (!hiding[i]) {
+      transforms[i].localMatrix = g_math.matrix4.translation(locs[i]);
+    }
   }
 
   if(x>0) x -= 1;

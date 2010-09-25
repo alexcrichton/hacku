@@ -16,6 +16,7 @@ YUI().use('anim', 'node', function(Y){
     a.get('node').remove();
 
     initClient(<%= raw @output %>);
+    setUserArtists(<%= raw @hash.to_json %>);
   });
 
   a.run();
