@@ -5,5 +5,9 @@
 </div>
 
 <div id="wrapper" style="display:none">
-  <input id="friends_input" type="text" />
+  <%= form_tag similarity_path, :remote => true do %>
+    <div>
+      <%= text_field_tag 'friends_input', params[:q], :id => 'friends_input' %>
+      <%= submit_tag 'Submit' %>
+  <% end %>
 </div>
