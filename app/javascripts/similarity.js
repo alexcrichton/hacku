@@ -40,7 +40,7 @@ function initClient(hash) {
     var vec = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
     var mag = Math.sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 
-    locs.push([vec[0] / mag, vec[1] / mag, vec[2] / mag]);
+     locs.push([vec[0] / mag, vec[1] / mag, vec[2] / mag]);
   }
 
   window.g_finished = false;  // for selenium testing.
