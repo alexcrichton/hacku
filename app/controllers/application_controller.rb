@@ -20,4 +20,24 @@ class ApplicationController < ActionController::Base
       redirect_to new_login_path
     end
   end
+
+  def get_facebook_cookie
+    value   = cookies["fbs_#{Rails.application.config.fb_app_id}"]
+    return nil if value.blank?
+    value   = value[1..-2]
+    hash    = {}
+    CGI.parse(value).each_pair{ |k, v| hash[k] = v[0] }
+    payload = ''
+    hash.each_pair do |k, v|
+      payload += [k, v].join('=') if k != 'sig'
+    end
+
+    digest = Digest::MD5.hexdigest(payload + Rails.application.config.fb_secret)
+
+    if digest == hash['sig']
+      hash
+    else
+      {}
+    end
+  end
 end
