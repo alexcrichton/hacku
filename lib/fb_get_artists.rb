@@ -6,8 +6,10 @@ module FbGetArtists
     mapping = {}
 
     users.each do |user|
-      mapping[user] = pullOutArtists get_facebook_response(user, access_token)
-    end
+      mapping[user]  = Rails.cache.fetch(user + '_artists') do
+    	pullOutArtists get_facebook_response(user, access_token)      
+	end
+      end
 
     mapping
   end
