@@ -27,14 +27,10 @@ class InfoController < ApplicationController
     respond_with @output
   end
 
-  def facebook_artists
-    @artists = get_facebook_artists(params[:users].split(',').map(&:chomp),
-      current_user)
-    respond_with @artists
-  end
-
   def grabfriends
-    @friends = get_facebook_friends(get_facebook_cookie['uid'], current_user)
+    Rails.cache.fetch(get_facebook_cookie['uid'] + '_friends') do
+      @friends = get_facebook_friends(get_facebook_cookie['uid'], current_user)
+    end
   end
 
 end
