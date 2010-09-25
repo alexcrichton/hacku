@@ -17,3 +17,7 @@
     </div>
   <% end %>
 </div>
+
+<% if current_user.blank? %>
+  <%= link_to 'Login', fb_login_url %>
+<% end %>
